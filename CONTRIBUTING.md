@@ -46,8 +46,8 @@ Technical maritime professionals can contribute:
 Before contributing, familiarize yourself with our maritime-specific capabilities:
 ```bash
 # Clone the repository
-git clone https://github.com/fusionpact/vessel-maintenance-ai.git
-cd vessel-maintenance-ai
+git clone https://github.com/FusionpactTech/Shipping-FusionAI.git
+cd Shipping-FusionAI
 
 # Set up the environment
 python3 -m venv venv

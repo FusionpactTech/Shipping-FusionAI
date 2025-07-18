@@ -33,7 +33,7 @@ The Vessel Maintenance AI System has been successfully deployed with comprehensi
 
 ### **Code Structure**
 ```
-vessel-maintenance-ai/
+Shipping-FusionAI/
 ├── app.py                 # Main FastAPI application (✅ Fully Commented)
 ├── requirements.txt       # Python dependencies
 ├── setup.py              # Installation and setup script

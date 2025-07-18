@@ -56,7 +56,7 @@ The **Vessel Maintenance AI System** is a comprehensive AI-powered application t
 1. **Clone and Setup**
    ```bash
    git clone <repository-url>
-   cd vessel-maintenance-ai
+   cd Shipping-FusionAI
    python3 -m venv venv
    source venv/bin/activate  # Linux/Mac
    # or venv\Scripts\activate  # Windows

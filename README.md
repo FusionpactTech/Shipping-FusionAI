@@ -4,17 +4,17 @@
 
 ---
 
-[![GitHub Stars](https://img.shields.io/github/stars/fusionpact/vessel-maintenance-ai?style=for-the-badge&logo=github&color=gold)](https://github.com/fusionpact/vessel-maintenance-ai/stargazers)
-[![Maritime Community](https://img.shields.io/badge/Maritime-Community-blue?style=for-the-badge&logo=anchor)](https://github.com/fusionpact/vessel-maintenance-ai/discussions)
+[![GitHub Stars](https://img.shields.io/github/stars/FusionpactTech/Shipping-FusionAI?style=for-the-badge&logo=github&color=gold)](https://github.com/FusionpactTech/Shipping-FusionAI/stargazers)
+[![Maritime Community](https://img.shields.io/badge/Maritime-Community-blue?style=for-the-badge&logo=anchor)](https://github.com/FusionpactTech/Shipping-FusionAI/discussions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Fusionpact Technologies](https://img.shields.io/badge/Built%20by-Fusionpact%20Technologies-orange?style=for-the-badge)](https://fusionpact.com)
 
 ### 🌊 **Join the Maritime AI Revolution**
 📢 **Share with your maritime network:**
-- 🔗 [LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/fusionpact/vessel-maintenance-ai) 
-- 🐦 [Twitter](https://twitter.com/intent/tweet?text=Check%20out%20this%20amazing%20Maritime%20AI%20system%20for%20vessel%20maintenance!&url=https://github.com/fusionpact/vessel-maintenance-ai&hashtags=MaritimeAI,VesselMaintenance,ShippingTech)
-- 📱 [WhatsApp](https://wa.me/?text=Check%20out%20this%20amazing%20Maritime%20AI%20system:%20https://github.com/fusionpact/vessel-maintenance-ai)
-- 📧 [Email](mailto:?subject=Maritime%20AI%20System%20-%20Vessel%20Maintenance&body=I%20found%20this%20interesting%20Maritime%20AI%20system%20for%20vessel%20maintenance:%20https://github.com/fusionpact/vessel-maintenance-ai)
+- 🔗 [LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/FusionpactTech/Shipping-FusionAI) 
+- 🐦 [Twitter](https://twitter.com/intent/tweet?text=Check%20out%20this%20amazing%20Maritime%20AI%20system%20for%20vessel%20maintenance!&url=https://github.com/FusionpactTech/Shipping-FusionAI&hashtags=MaritimeAI,VesselMaintenance,ShippingTech)
+- 📱 [WhatsApp](https://wa.me/?text=Check%20out%20this%20amazing%20Maritime%20AI%20system:%20https://github.com/FusionpactTech/Shipping-FusionAI)
+- 📧 [Email](mailto:?subject=Maritime%20AI%20System%20-%20Vessel%20Maintenance&body=I%20found%20this%20interesting%20Maritime%20AI%20system%20for%20vessel%20maintenance:%20https://github.com/FusionpactTech/Shipping-FusionAI)
 
 ---
 

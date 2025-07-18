@@ -1,0 +1,181 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vessel-maintenance-ai"
+version = "1.0.0"
+description = "AI-powered application for automated processing and classification of vessel maintenance records, sensor anomaly alerts, and incident reports"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Fusionpact Technologies Inc.", email = "support@fusionpact.com"}
+]
+maintainers = [
+    {name = "Fusionpact Technologies Inc.", email = "support@fusionpact.com"}
+]
+keywords = [
+    "maritime", "ai", "vessel", "maintenance", "shipping", "nlp", 
+    "fleet-management", "maritime-ai", "vessel-maintenance", "ship-management",
+    "maritime-software", "marine-engineering", "vessel-operations",
+    "maritime-compliance", "shipping-technology", "marine-ai"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11", 
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Other/Nonlisted Topic",
+    "Environment :: Web Environment",
+    "Framework :: FastAPI",
+    "Natural Language :: English",
+    "Typing :: Typed"
+]
+requires-python = ">=3.8"
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn==0.34.0", 
+    "pandas==2.2.3",
+    "numpy==1.26.4",
+    "scikit-learn==1.6.0",
+    "nltk==3.9.1",
+    "requests==2.32.3",
+    "python-dateutil==2.9.0",
+    "textblob==0.18.0",
+    "pydantic==2.10.4",
+    "aiofiles==24.1.0",
+    "python-multipart==0.0.12",
+    "jinja2==3.1.4"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-asyncio>=0.18.0",
+    "pytest-cov>=3.0.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "flake8>=4.0.0",
+    "mypy>=0.950"
+]
+production = [
+    "gunicorn>=20.1.0",
+    "prometheus-client>=0.14.0"
+]
+docs = [
+    "mkdocs>=1.4.0",
+    "mkdocs-material>=8.5.0",
+    "mkdocstrings[python]>=0.19.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/FusionpactTech/Shipping-FusionAI"
+Documentation = "https://github.com/FusionpactTech/Shipping-FusionAI#readme"
+Repository = "https://github.com/FusionpactTech/Shipping-FusionAI"
+"Bug Reports" = "https://github.com/FusionpactTech/Shipping-FusionAI/issues"
+"Feature Requests" = "https://github.com/FusionpactTech/Shipping-FusionAI/issues/new?template=feature_request.md"
+"Maritime Community" = "https://github.com/FusionpactTech/Shipping-FusionAI/discussions"
+"Integration Requests" = "https://github.com/FusionpactTech/Shipping-FusionAI/issues/new?template=integration_request.md"
+Changelog = "https://github.com/FusionpactTech/Shipping-FusionAI/blob/main/CHANGELOG.md"
+"Company Website" = "https://fusionpact.com"
+
+[project.scripts]
+vessel-ai = "app:main"
+
+[tool.setuptools]
+packages = ["src"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"*" = ["*.html", "*.css", "*.js", "*.json", "*.md", "*.txt", "*.yml", "*.yaml"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["tests/*", "*.pyc", "__pycache__", "*.log"]
+
+# Black configuration
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py313']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# isort configuration  
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["src"]
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+# pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=80"
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/env/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:"
+]

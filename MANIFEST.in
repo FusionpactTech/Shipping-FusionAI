@@ -1,0 +1,52 @@
+# Include documentation and license files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include MARITIME_COMMUNITY_STRATEGY.md
+include DEPLOYMENT_SUMMARY.md
+include LICENSE_AND_PROPERTIES_UPDATE.md
+include GITHUB_STARS_STRATEGY_SUMMARY.md
+
+# Include configuration files
+include requirements.txt
+include pyproject.toml
+include setup.py
+
+# Include templates and static files
+recursive-include templates *.html *.css *.js
+recursive-include static *.css *.js *.ico *.png *.jpg *.svg
+
+# Include GitHub templates and workflows
+recursive-include .github *.md *.yml *.yaml
+
+# Include source code
+recursive-include src *.py
+
+# Include sample data and setup scripts
+include sample_data.py
+
+# Exclude cache and build files
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude *.pyo
+global-exclude *.log
+global-exclude .DS_Store
+global-exclude Thumbs.db
+
+# Exclude development and testing files
+exclude .gitignore
+exclude .coverage
+exclude pytest.ini
+exclude tox.ini
+recursive-exclude tests *
+recursive-exclude venv *
+recursive-exclude env *
+recursive-exclude .venv *
+recursive-exclude build *
+recursive-exclude dist *
+recursive-exclude *.egg-info *
+
+# Exclude data directory (created at runtime)
+recursive-exclude data *
+recursive-exclude logs *

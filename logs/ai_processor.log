@@ -202,3 +202,11 @@ If this doesn't fix the problem, file an issue at https://github.com/sloria/Text
 2025-07-18 18:48:12,833 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
 2025-07-18 18:48:12,834 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
 2025-07-18 18:48:12,834 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:55:34,459 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:55:34,459 - src.database - INFO - Database initialized successfully
+2025-07-18 18:55:34,486 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:55:34,486 - src.database - INFO - Database initialized successfully
+2025-07-18 18:58:07,456 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:58:07,457 - src.database - INFO - Database initialized successfully
+2025-07-18 18:58:07,469 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:58:07,470 - src.database - INFO - Database initialized successfully

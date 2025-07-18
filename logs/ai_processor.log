@@ -1,0 +1,97 @@
+2025-07-18 17:49:45,384 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 17:49:45,449 - src.database - INFO - Database initialized successfully
+2025-07-18 17:50:09,060 - src.ai_processor - INFO - Processing text input of 121 characters
+2025-07-18 17:50:09,061 - src.ai_processor - ERROR - Error processing text: 'VesselMaintenanceAI' object has no attribute 'nlp'
+2025-07-18 17:50:09,067 - src.database - INFO - Stored processing result: 221240b1-735d-4d7e-8156-41753857b818
+2025-07-18 17:51:30,471 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 17:51:30,471 - src.database - INFO - Database initialized successfully
+2025-07-18 17:51:39,605 - src.ai_processor - INFO - Processing text input of 140 characters
+2025-07-18 17:51:39,606 - src.ai_processor - ERROR - Error processing text: 
+Looks like you are missing some required data for this feature.
+
+To download the necessary data, simply run
+
+    python -m textblob.download_corpora
+
+or use the NLTK downloader to download the missing data: http://nltk.org/data.html
+If this doesn't fix the problem, file an issue at https://github.com/sloria/TextBlob/issues.
+
+2025-07-18 17:51:39,609 - src.database - INFO - Stored processing result: bbce91a8-54bf-4694-9a76-2e5d790ec70e
+2025-07-18 17:51:57,968 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 17:51:57,969 - src.database - INFO - Database initialized successfully
+2025-07-18 17:52:07,859 - src.ai_processor - INFO - Processing text input of 140 characters
+2025-07-18 17:52:09,048 - src.ai_processor - ERROR - Error processing text: 
+**********************************************************************
+  Resource [93mpunkt_tab[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('punkt_tab')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93mtokenizers/punkt_tab/english/[0m
+
+  Searched in:
+    - '/home/ubuntu/nltk_data'
+    - '/workspace/venv/nltk_data'
+    - '/workspace/venv/share/nltk_data'
+    - '/workspace/venv/lib/nltk_data'
+    - '/usr/share/nltk_data'
+    - '/usr/local/share/nltk_data'
+    - '/usr/lib/nltk_data'
+    - '/usr/local/lib/nltk_data'
+**********************************************************************
+
+2025-07-18 17:52:09,056 - src.database - INFO - Stored processing result: 41662d80-8b18-4cfb-af3e-65b8fb89959b
+2025-07-18 17:52:19,144 - src.ai_processor - INFO - Processing text input of 140 characters
+2025-07-18 17:52:19,156 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:19,161 - src.database - INFO - Stored processing result: 1eeb56a9-e063-4e0c-a41f-f3efd10b2c40
+2025-07-18 17:52:25,501 - src.ai_processor - INFO - Processing text input of 204 characters
+2025-07-18 17:52:25,502 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:25,509 - src.database - INFO - Stored processing result: 135842c2-0844-4e95-9984-093c183919f6
+2025-07-18 17:52:30,380 - src.ai_processor - INFO - Processing text input of 255 characters
+2025-07-18 17:52:30,381 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:30,387 - src.database - INFO - Stored processing result: a5c1adcb-79dd-49c4-8fc2-462ccf710e66
+2025-07-18 17:52:49,464 - src.ai_processor - INFO - Processing text input of 511 characters
+2025-07-18 17:52:49,466 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:49,470 - src.database - INFO - Stored processing result: 2800c489-8e12-4bf1-85eb-3bd30c2aeda0
+2025-07-18 17:52:50,473 - src.ai_processor - INFO - Processing text input of 474 characters
+2025-07-18 17:52:50,474 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:50,483 - src.database - INFO - Stored processing result: 265fc050-71b6-43bc-8f6e-292c85f0a220
+2025-07-18 17:52:51,486 - src.ai_processor - INFO - Processing text input of 503 characters
+2025-07-18 17:52:51,487 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:51,492 - src.database - INFO - Stored processing result: 4bea5663-39a2-488c-b8a2-5d490abf43c3
+2025-07-18 17:52:52,495 - src.ai_processor - INFO - Processing text input of 508 characters
+2025-07-18 17:52:52,496 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:52,502 - src.database - INFO - Stored processing result: c67b9765-a9bb-4a86-bd51-87df94146cb4
+2025-07-18 17:52:53,505 - src.ai_processor - INFO - Processing text input of 466 characters
+2025-07-18 17:52:53,508 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:53,520 - src.database - INFO - Stored processing result: 54363ad4-e7c8-4a30-b76d-f383566c045b
+2025-07-18 17:52:54,523 - src.ai_processor - INFO - Processing text input of 477 characters
+2025-07-18 17:52:54,525 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:54,530 - src.database - INFO - Stored processing result: 8d76c878-8e16-49d5-96e5-7c7028fcb285
+2025-07-18 17:52:55,533 - src.ai_processor - INFO - Processing text input of 448 characters
+2025-07-18 17:52:55,534 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:55,539 - src.database - INFO - Stored processing result: acd75401-e80f-444b-9f6d-e6abfea072b1
+2025-07-18 17:52:56,542 - src.ai_processor - INFO - Processing text input of 435 characters
+2025-07-18 17:52:56,543 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:56,552 - src.database - INFO - Stored processing result: f1293765-00bd-4ae6-93ed-bb0b8575e08d
+2025-07-18 17:52:57,555 - src.ai_processor - INFO - Processing text input of 397 characters
+2025-07-18 17:52:57,556 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:57,560 - src.database - INFO - Stored processing result: 34d10402-5900-4ce3-a703-52d1fd123fd0
+2025-07-18 17:52:58,564 - src.ai_processor - INFO - Processing text input of 431 characters
+2025-07-18 17:52:58,565 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:58,569 - src.database - INFO - Stored processing result: 8b75790f-b30c-4d2d-88d1-11007277b70f
+2025-07-18 17:52:59,573 - src.ai_processor - INFO - Processing text input of 339 characters
+2025-07-18 17:52:59,574 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:52:59,580 - src.database - INFO - Stored processing result: e7c8a49b-ccd2-41bf-9972-38a099d2bd97
+2025-07-18 17:53:00,583 - src.ai_processor - INFO - Processing text input of 324 characters
+2025-07-18 17:53:00,584 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:53:00,587 - src.database - INFO - Stored processing result: 94a15895-a968-40d0-9dc1-9467fcec8909
+2025-07-18 17:53:01,590 - src.ai_processor - INFO - Processing text input of 340 characters
+2025-07-18 17:53:01,591 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:53:01,597 - src.database - INFO - Stored processing result: 6eed590f-6e92-4ad2-aa82-3372b2357b8b
+2025-07-18 17:53:02,600 - src.ai_processor - INFO - Processing text input of 315 characters
+2025-07-18 17:53:02,601 - src.ai_processor - INFO - Generated 1 analysis results
+2025-07-18 17:53:02,609 - src.database - INFO - Stored processing result: e5fe0290-6ba6-447b-a947-414a086e2277

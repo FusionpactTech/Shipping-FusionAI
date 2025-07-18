@@ -187,3 +187,18 @@ If this doesn't fix the problem, file an issue at https://github.com/sloria/Text
 2025-07-18 18:47:01,700 - src.ai_processor - INFO - Processing document of length 78
 2025-07-18 18:47:01,702 - src.ai_processor - INFO - Document processed successfully: ClassificationType.CRITICAL_EQUIPMENT_FAILURE - PriorityLevel.CRITICAL
 2025-07-18 18:47:01,707 - src.database - INFO - Saved processing result: 64bb2bd5-c384-48fb-9937-5076345ddadf
+2025-07-18 18:47:52,961 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:47:52,962 - src.database - INFO - Database initialized successfully
+2025-07-18 18:47:52,976 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:47:52,976 - src.database - INFO - Database initialized successfully
+2025-07-18 18:48:00,773 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:48:00,774 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:48:00,774 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:48:00,774 - src.ai_processor - INFO - Processing document of length 30
+2025-07-18 18:48:02,008 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ROUTINE_MAINTENANCE - PriorityLevel.MEDIUM
+2025-07-18 18:48:02,008 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:48:02,009 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:48:02,009 - src.database - INFO - Generated analytics for 1 days
+2025-07-18 18:48:12,833 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:48:12,834 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:48:12,834 - src.database - INFO - Generated analytics for 30 days

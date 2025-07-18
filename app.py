@@ -1,3 +1,31 @@
+"""
+Vessel Maintenance AI System - Main Application
+
+This is the main FastAPI application that serves as the entry point for the
+vessel maintenance AI system. It provides RESTful API endpoints for document
+processing, analytics, and system management, along with a web interface
+for interactive use.
+
+Key Features:
+- RESTful API for document processing
+- Real-time analytics and reporting
+- File upload and batch processing
+- Web interface for system interaction
+- Health monitoring and system status
+- CORS support for cross-origin requests
+
+Endpoints:
+- POST /process/text - Process text documents
+- POST /process/file - Process uploaded files
+- GET /analytics - Get system analytics
+- GET /health - System health check
+- GET / - Web interface
+
+Author: AI Assistant
+Date: 2025-07-18
+Version: 1.0.0
+"""
+
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -6,385 +34,556 @@ import uvicorn
 import os
 from pathlib import Path
 
+# Import our custom modules
 from src.ai_processor import VesselMaintenanceAI
 from src.models import ProcessingRequest, ProcessingResponse
 from src.database import DatabaseManager
 
+# Initialize FastAPI application with metadata
 app = FastAPI(
     title="Vessel Maintenance AI System",
     description="AI-powered application for processing vessel maintenance records, sensor anomaly alerts, and incident reports",
     version="1.0.0"
 )
 
-# CORS middleware
+# Configure CORS middleware for cross-origin requests
+# This allows the web interface to communicate with the API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # In production, specify actual domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize AI processor and database
+# Initialize core system components
 ai_processor = VesselMaintenanceAI()
 db_manager = DatabaseManager()
 
-# Mount static files
+# Ensure required directories exist
+os.makedirs("data", exist_ok=True)
+os.makedirs("logs", exist_ok=True)
+os.makedirs("static", exist_ok=True)
+os.makedirs("templates", exist_ok=True)
+
+# Mount static files for the web interface
 if Path("static").exists():
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
 @app.get("/", response_class=HTMLResponse)
-async def read_root():
-    """Serve the main dashboard"""
-    html_content = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Vessel Maintenance AI Dashboard</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        <style>
-            .upload-area {
-                border: 2px dashed #007bff;
-                border-radius: 10px;
-                padding: 40px;
-                text-align: center;
-                margin: 20px 0;
-                transition: all 0.3s ease;
-            }
-            .upload-area:hover {
-                background-color: #f8f9fa;
-                border-color: #0056b3;
-            }
-            .classification-badge {
-                font-size: 0.9em;
-                padding: 8px 12px;
-            }
-            .critical { background-color: #dc3545; }
-            .warning { background-color: #fd7e14; }
-            .compliance { background-color: #6610f2; }
-            .maintenance { background-color: #20c997; }
-        </style>
-    </head>
-    <body>
-        <nav class="navbar navbar-dark bg-dark">
-            <div class="container">
-                <span class="navbar-brand mb-0 h1">
-                    <i class="fas fa-ship"></i> Vessel Maintenance AI System
-                </span>
-            </div>
-        </nav>
-
-        <div class="container mt-4">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5><i class="fas fa-upload"></i> Document Processing</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="upload-area" id="uploadArea">
-                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
-                                <h5>Upload Vessel Documents</h5>
-                                <p class="text-muted">Drag and drop files here or click to browse</p>
-                                <input type="file" id="fileInput" multiple accept=".txt,.pdf,.doc,.docx" style="display: none;">
-                                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                                    Select Files
-                                </button>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="textInput" class="form-label">Or paste text directly:</label>
-                                <textarea class="form-control" id="textInput" rows="6" 
-                                    placeholder="Paste maintenance records, sensor alerts, or incident reports here..."></textarea>
-                            </div>
-                            
-                            <button class="btn btn-success btn-lg" onclick="processDocument()">
-                                <i class="fas fa-cogs"></i> Process with AI
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5><i class="fas fa-chart-pie"></i> Quick Stats</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-center">
-                                <div class="col-6">
-                                    <h3 class="text-danger" id="criticalCount">0</h3>
-                                    <small>Critical Alerts</small>
-                                </div>
-                                <div class="col-6">
-                                    <h3 class="text-success" id="processedCount">0</h3>
-                                    <small>Processed Today</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card mt-3">
-                        <div class="card-header">
-                            <h5><i class="fas fa-tags"></i> Classification Types</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge classification-badge critical">Critical Equipment Failure Risk</span>
-                                <span class="badge classification-badge warning">Navigational Hazard Alert</span>
-                                <span class="badge classification-badge compliance">Environmental Compliance Breach</span>
-                                <span class="badge classification-badge maintenance">Routine Maintenance Required</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5><i class="fas fa-list"></i> Processing Results</h5>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="clearResults()">
-                                Clear Results
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div id="results" class="row">
-                                <div class="col-12 text-center text-muted">
-                                    <i class="fas fa-info-circle"></i>
-                                    No documents processed yet. Upload or paste content above to get started.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            let processedCount = 0;
-            let criticalCount = 0;
-
-            async function processDocument() {
-                const textInput = document.getElementById('textInput').value;
-                const fileInput = document.getElementById('fileInput');
-                
-                if (!textInput.trim() && fileInput.files.length === 0) {
-                    alert('Please provide text input or select files to process.');
-                    return;
-                }
-
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = '<div class="col-12 text-center"><div class="spinner-border" role="status"></div><p class="mt-2">Processing with AI...</p></div>';
-
-                try {
-                    let response;
-                    
-                    if (textInput.trim()) {
-                        // Process text input
-                        response = await fetch('/process/text', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ text: textInput })
-                        });
-                    } else {
-                        // Process file upload
-                        const formData = new FormData();
-                        for (let file of fileInput.files) {
-                            formData.append('files', file);
-                        }
-                        
-                        response = await fetch('/process/files', {
-                            method: 'POST',
-                            body: formData
-                        });
-                    }
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    displayResults(result);
-                    updateStats(result);
-                    
-                    // Clear inputs
-                    document.getElementById('textInput').value = '';
-                    fileInput.value = '';
-                    
-                } catch (error) {
-                    console.error('Error:', error);
-                    resultsDiv.innerHTML = `
-                        <div class="col-12">
-                            <div class="alert alert-danger">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Error processing document: ${error.message}
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-
-            function displayResults(results) {
-                const resultsDiv = document.getElementById('results');
-                
-                if (results.length === 0) {
-                    resultsDiv.innerHTML = '<div class="col-12 text-center text-muted">No results to display.</div>';
-                    return;
-                }
-
-                let html = '';
-                results.forEach((result, index) => {
-                    const badgeClass = getBadgeClass(result.classification);
-                    const priorityIcon = getPriorityIcon(result.priority);
-                    
-                    html += `
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge ${badgeClass} classification-badge">
-                                            ${result.classification}
-                                        </span>
-                                        <span class="text-muted">${priorityIcon} ${result.priority}</span>
-                                    </div>
-                                    <h6 class="card-title">${result.summary}</h6>
-                                    <p class="card-text text-muted small">${result.details}</p>
-                                    <div class="mt-2">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock"></i> ${new Date().toLocaleString()}
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                resultsDiv.innerHTML = html;
-            }
-
-            function getBadgeClass(classification) {
-                switch(classification.toLowerCase()) {
-                    case 'critical equipment failure risk': return 'critical';
-                    case 'navigational hazard alert': return 'warning';
-                    case 'environmental compliance breach': return 'compliance';
-                    default: return 'maintenance';
-                }
-            }
-
-            function getPriorityIcon(priority) {
-                switch(priority.toLowerCase()) {
-                    case 'critical': return '<i class="fas fa-exclamation-triangle text-danger"></i>';
-                    case 'high': return '<i class="fas fa-exclamation-circle text-warning"></i>';
-                    case 'medium': return '<i class="fas fa-info-circle text-info"></i>';
-                    default: return '<i class="fas fa-check-circle text-success"></i>';
-                }
-            }
-
-            function updateStats(results) {
-                processedCount += results.length;
-                criticalCount += results.filter(r => r.priority.toLowerCase() === 'critical').length;
-                
-                document.getElementById('processedCount').textContent = processedCount;
-                document.getElementById('criticalCount').textContent = criticalCount;
-            }
-
-            function clearResults() {
-                document.getElementById('results').innerHTML = 
-                    '<div class="col-12 text-center text-muted"><i class="fas fa-info-circle"></i> No documents processed yet. Upload or paste content above to get started.</div>';
-                processedCount = 0;
-                criticalCount = 0;
-                updateStats([]);
-            }
-
-            // Drag and drop functionality
-            const uploadArea = document.getElementById('uploadArea');
-            const fileInput = document.getElementById('fileInput');
-
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '#e3f2fd';
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.style.backgroundColor = '';
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '';
-                fileInput.files = e.dataTransfer.files;
-            });
-        </script>
-    </body>
-    </html>
+async def serve_web_interface():
     """
-    return html_content
-
-@app.post("/process/text")
-async def process_text(request: ProcessingRequest):
-    """Process text input"""
+    Serve the main web interface for the vessel maintenance AI system.
+    
+    Returns the HTML page that provides an interactive interface for
+    users to process documents, view analytics, and monitor system status.
+    
+    Returns:
+        HTMLResponse: The main web interface HTML page
+    """
     try:
-        results = ai_processor.process_text(request.text)
+        # Check if custom template exists, otherwise use default
+        template_path = Path("templates/index.html")
+        if template_path.exists():
+            with open(template_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+        else:
+            # Fallback HTML content if template file is missing
+            html_content = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Vessel Maintenance AI System</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; }
+                    .container { max-width: 800px; margin: 0 auto; }
+                    .header { text-align: center; margin-bottom: 40px; }
+                    .section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🚢 Vessel Maintenance AI System</h1>
+                        <p>AI-powered document processing for maritime operations</p>
+                    </div>
+                    <div class="section">
+                        <h2>Quick Start</h2>
+                        <p>Use the API endpoints to process documents:</p>
+                        <ul>
+                            <li><strong>POST /process/text</strong> - Process text documents</li>
+                            <li><strong>GET /analytics</strong> - View system analytics</li>
+                            <li><strong>GET /health</strong> - Check system status</li>
+                        </ul>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
         
-        # Store in database
-        for result in results:
-            db_manager.store_result(result)
+        return HTMLResponse(content=html_content)
         
-        return results
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Return a simple error page if something goes wrong
+        error_html = f"""
+        <html>
+            <body>
+                <h1>Vessel Maintenance AI System</h1>
+                <p>Error loading interface: {str(e)}</p>
+                <p>API is still available at the documented endpoints.</p>
+            </body>
+        </html>
+        """
+        return HTMLResponse(content=error_html)
 
-@app.post("/process/files")
-async def process_files(files: list[UploadFile] = File(...)):
-    """Process uploaded files"""
+
+@app.post("/process/text", response_model=ProcessingResponse)
+async def process_text_document(request: ProcessingRequest):
+    """
+    Process a text document through the AI analysis pipeline.
+    
+    This endpoint accepts text content and optional metadata, then processes
+    it through the vessel maintenance AI system to extract insights,
+    classify issues, and generate actionable recommendations.
+    
+    Args:
+        request (ProcessingRequest): The document processing request containing
+                                   text content and optional metadata
+    
+    Returns:
+        ProcessingResponse: Comprehensive analysis results including classification,
+                          priority assessment, extracted entities, and recommendations
+    
+    Raises:
+        HTTPException: If processing fails or invalid input is provided
+    """
     try:
-        all_results = []
+        # Validate input
+        if not request.text or len(request.text.strip()) < 10:
+            raise HTTPException(
+                status_code=400,
+                detail="Text content must be at least 10 characters long"
+            )
         
-        for file in files:
-            content = await file.read()
-            text = content.decode('utf-8', errors='ignore')
-            
-            results = ai_processor.process_text(text)
-            all_results.extend(results)
-            
-            # Store in database
-            for result in results:
-                db_manager.store_result(result)
+        # Process the document through the AI system
+        result = ai_processor.process_document(
+            text=request.text,
+            document_type=request.document_type,
+            vessel_id=request.vessel_id
+        )
         
-        return all_results
+        # Store the result in the database for analytics and history
+        db_manager.save_result(result)
+        
+        return result
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (validation errors)
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Handle unexpected errors gracefully
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing document: {str(e)}"
+        )
+
+
+@app.post("/process/file")
+async def process_uploaded_file(file: UploadFile = File(...), vessel_id: str = Form(None)):
+    """
+    Process an uploaded file through the AI analysis pipeline.
+    
+    Accepts file uploads (text, PDF, or other document formats) and processes
+    the content through the vessel maintenance AI system. Supports batch
+    processing for multiple sections within a single file.
+    
+    Args:
+        file (UploadFile): The uploaded file to process
+        vessel_id (str, optional): Associated vessel identifier
+    
+    Returns:
+        dict: Processing results including file information and analysis results
+    
+    Raises:
+        HTTPException: If file processing fails or unsupported file type
+    """
+    try:
+        # Validate file
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No file provided")
+        
+        # Check file size (limit to 10MB for performance)
+        max_size = 10 * 1024 * 1024  # 10MB
+        content = await file.read()
+        
+        if len(content) > max_size:
+            raise HTTPException(
+                status_code=400,
+                detail="File too large. Maximum size is 10MB"
+            )
+        
+        # Extract text content based on file type
+        try:
+            if file.filename.lower().endswith('.txt'):
+                text_content = content.decode('utf-8')
+            else:
+                # For other file types, attempt UTF-8 decoding
+                # In production, you might want to add PDF processing, etc.
+                text_content = content.decode('utf-8')
+        except UnicodeDecodeError:
+            raise HTTPException(
+                status_code=400,
+                detail="Unable to decode file content. Please ensure it's a text file with UTF-8 encoding"
+            )
+        
+        # Validate extracted text
+        if len(text_content.strip()) < 10:
+            raise HTTPException(
+                status_code=400,
+                detail="File content too short for meaningful analysis"
+            )
+        
+        # Process the extracted text
+        result = ai_processor.process_document(
+            text=text_content,
+            document_type="File Upload",
+            vessel_id=vessel_id
+        )
+        
+        # Store the result in the database
+        db_manager.save_result(result)
+        
+        # Return file processing summary
+        return {
+            "filename": file.filename,
+            "file_size": len(content),
+            "processing_status": "completed",
+            "result": result.model_dump()
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        # Handle unexpected errors
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing file: {str(e)}"
+        )
+
 
 @app.get("/analytics")
-async def get_analytics():
-    """Get analytics data"""
+async def get_system_analytics(days: int = 30):
+    """
+    Retrieve comprehensive system analytics and metrics.
+    
+    Provides aggregated statistics about document processing, classification
+    distributions, priority breakdowns, and recent trends for monitoring
+    and reporting purposes.
+    
+    Args:
+        days (int): Number of days to include in analytics (default: 30)
+    
+    Returns:
+        AnalyticsData: Comprehensive analytics including processing statistics,
+                      classification breakdowns, and performance metrics
+    
+    Raises:
+        HTTPException: If analytics generation fails
+    """
     try:
-        analytics = db_manager.get_analytics()
-        return analytics
+        # Validate input
+        if days < 1 or days > 365:
+            raise HTTPException(
+                status_code=400,
+                detail="Days parameter must be between 1 and 365"
+            )
+        
+        # Generate analytics from the database
+        analytics = db_manager.get_analytics(days_back=days)
+        
+        # Add system status information
+        analytics_dict = analytics.model_dump()
+        analytics_dict["query_parameters"] = {
+            "days_included": days,
+            "generated_at": analytics.model_dump().get("timestamp", "unknown")
+        }
+        
+        return analytics_dict
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Handle analytics generation errors
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error generating analytics: {str(e)}"
+        )
+
 
 @app.get("/history")
-async def get_history(limit: int = 50):
-    """Get processing history"""
-    try:
-        history = db_manager.get_history(limit)
-        return history
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-if __name__ == "__main__":
-    # Create necessary directories
-    os.makedirs("data", exist_ok=True)
-    os.makedirs("logs", exist_ok=True)
+async def get_processing_history(
+    limit: int = 50,
+    classification: str = None,
+    priority: str = None,
+    vessel_id: str = None,
+    days: int = 30
+):
+    """
+    Retrieve processing history with optional filtering.
     
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    Returns a list of previously processed documents with support for
+    filtering by classification, priority, vessel, and time range.
+    
+    Args:
+        limit (int): Maximum number of results to return (default: 50)
+        classification (str, optional): Filter by classification type
+        priority (str, optional): Filter by priority level
+        vessel_id (str, optional): Filter by vessel identifier
+        days (int): Number of days to look back (default: 30)
+    
+    Returns:
+        dict: Processing history results with filtering information
+    
+    Raises:
+        HTTPException: If history retrieval fails
+    """
+    try:
+        # Validate parameters
+        if limit < 1 or limit > 1000:
+            raise HTTPException(
+                status_code=400,
+                detail="Limit must be between 1 and 1000"
+            )
+        
+        if days < 1 or days > 365:
+            raise HTTPException(
+                status_code=400,
+                detail="Days parameter must be between 1 and 365"
+            )
+        
+        # Retrieve filtered results from database
+        results = db_manager.get_results(
+            limit=limit,
+            classification=classification,
+            priority=priority,
+            vessel_id=vessel_id,
+            days_back=days
+        )
+        
+        return {
+            "results": results,
+            "total_returned": len(results),
+            "filters_applied": {
+                "classification": classification,
+                "priority": priority,
+                "vessel_id": vessel_id,
+                "days_back": days,
+                "limit": limit
+            }
+        }
+        
+    except Exception as e:
+        # Handle history retrieval errors
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving history: {str(e)}"
+        )
+
+
+@app.get("/health")
+async def health_check():
+    """
+    Perform a comprehensive system health check.
+    
+    Checks the status of all system components including the AI processor,
+    database, and overall system performance to ensure everything is
+    operating correctly.
+    
+    Returns:
+        dict: System health status including component statuses and metrics
+    """
+    try:
+        health_status = {
+            "status": "healthy",
+            "timestamp": db_manager.get_analytics().model_dump().get("timestamp", "unknown"),
+            "version": "1.0.0",
+            "components": {}
+        }
+        
+        # Check AI processor status
+        try:
+            # Simple test to verify AI processor is working
+            test_result = ai_processor.process_document(
+                "Test document for health check",
+                document_type="Health Check"
+            )
+            health_status["components"]["ai_processor"] = {
+                "status": "healthy",
+                "last_test": "successful"
+            }
+        except Exception as e:
+            health_status["components"]["ai_processor"] = {
+                "status": "unhealthy",
+                "error": str(e)
+            }
+            health_status["status"] = "degraded"
+        
+        # Check database status
+        try:
+            # Get database info to verify connectivity
+            db_info = db_manager.get_database_info()
+            health_status["components"]["database"] = {
+                "status": "healthy",
+                "info": db_info
+            }
+        except Exception as e:
+            health_status["components"]["database"] = {
+                "status": "unhealthy",
+                "error": str(e)
+            }
+            health_status["status"] = "degraded"
+        
+        # Add system metrics if available
+        try:
+            analytics = db_manager.get_analytics(days_back=1)
+            health_status["metrics"] = {
+                "processed_today": analytics.total_processed,
+                "critical_alerts_today": analytics.critical_alerts
+            }
+        except Exception:
+            # Non-critical if analytics aren't available
+            pass
+        
+        return health_status
+        
+    except Exception as e:
+        # Return unhealthy status if health check itself fails
+        return {
+            "status": "unhealthy",
+            "error": f"Health check failed: {str(e)}",
+            "timestamp": "unknown"
+        }
+
+
+@app.delete("/admin/cleanup")
+async def cleanup_old_data(days_to_keep: int = 90):
+    """
+    Administrative endpoint to clean up old data.
+    
+    Removes processing results older than the specified number of days
+    to manage database size and improve performance. This is typically
+    called periodically for system maintenance.
+    
+    Args:
+        days_to_keep (int): Number of days of data to retain (default: 90)
+    
+    Returns:
+        dict: Cleanup operation results
+    
+    Raises:
+        HTTPException: If cleanup operation fails
+    """
+    try:
+        # Validate input
+        if days_to_keep < 7:
+            raise HTTPException(
+                status_code=400,
+                detail="Must keep at least 7 days of data"
+            )
+        
+        # Perform cleanup operation
+        deleted_count = db_manager.cleanup_old_records(days_to_keep)
+        
+        return {
+            "status": "completed",
+            "records_deleted": deleted_count,
+            "days_kept": days_to_keep,
+            "cleanup_timestamp": db_manager.get_analytics().model_dump().get("timestamp", "unknown")
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        # Handle cleanup errors
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error during cleanup: {str(e)}"
+        )
+
+
+@app.exception_handler(404)
+async def not_found_handler(request, exc):
+    """
+    Custom 404 error handler for better user experience.
+    
+    Returns a helpful JSON response when API endpoints are not found,
+    including available endpoint information.
+    """
+    return JSONResponse(
+        status_code=404,
+        content={
+            "error": "Endpoint not found",
+            "message": "The requested endpoint does not exist",
+            "available_endpoints": [
+                "POST /process/text - Process text documents",
+                "POST /process/file - Process uploaded files",
+                "GET /analytics - Get system analytics",
+                "GET /history - Get processing history",
+                "GET /health - System health check",
+                "GET / - Web interface"
+            ]
+        }
+    )
+
+
+@app.exception_handler(500)
+async def internal_error_handler(request, exc):
+    """
+    Custom 500 error handler for internal server errors.
+    
+    Provides consistent error response format for unexpected errors
+    while hiding sensitive internal details.
+    """
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "Internal server error",
+            "message": "An unexpected error occurred. Please try again later.",
+            "timestamp": db_manager.get_analytics().model_dump().get("timestamp", "unknown")
+        }
+    )
+
+
+def main():
+    """
+    Main entry point for running the application.
+    
+    Configures and starts the Uvicorn ASGI server with appropriate
+    settings for development and production environments.
+    """
+    # Determine if running in development mode
+    debug_mode = os.getenv("DEBUG", "false").lower() == "true"
+    
+    # Configure server settings
+    server_config = {
+        "app": "app:app",
+        "host": "0.0.0.0",  # Listen on all interfaces
+        "port": 8000,
+        "reload": debug_mode,  # Auto-reload in development
+        "log_level": "info" if not debug_mode else "debug"
+    }
+    
+    print("🚢 Starting Vessel Maintenance AI System...")
+    print(f"🌐 Server will be available at: http://localhost:8000")
+    print(f"📊 Analytics: http://localhost:8000/analytics")
+    print(f"💊 Health Check: http://localhost:8000/health")
+    print(f"🔧 Debug Mode: {debug_mode}")
+    
+    # Start the server
+    uvicorn.run(**server_config)
+
+
+# Entry point when running directly
+if __name__ == "__main__":
+    main()

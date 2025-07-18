@@ -95,3 +95,75 @@ If this doesn't fix the problem, file an issue at https://github.com/sloria/Text
 2025-07-18 17:53:02,600 - src.ai_processor - INFO - Processing text input of 315 characters
 2025-07-18 17:53:02,601 - src.ai_processor - INFO - Generated 1 analysis results
 2025-07-18 17:53:02,609 - src.database - INFO - Stored processing result: e5fe0290-6ba6-447b-a947-414a086e2277
+2025-07-18 18:05:52,167 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:05:52,175 - src.database - INFO - Database initialized successfully
+2025-07-18 18:05:52,190 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:05:52,191 - src.database - INFO - Database initialized successfully
+2025-07-18 18:06:01,163 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:06:01,164 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:06:01,164 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:06:01,164 - src.ai_processor - INFO - Processing document of length 30
+2025-07-18 18:06:02,391 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ROUTINE_MAINTENANCE - PriorityLevel.MEDIUM
+2025-07-18 18:06:02,392 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:06:02,393 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:06:02,393 - src.database - INFO - Generated analytics for 1 days
+2025-07-18 18:06:08,099 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:06:08,100 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:06:08,100 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:06:08,100 - src.ai_processor - INFO - Processing document of length 30
+2025-07-18 18:06:08,100 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ROUTINE_MAINTENANCE - PriorityLevel.MEDIUM
+2025-07-18 18:06:08,100 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:06:08,101 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:06:08,101 - src.database - INFO - Generated analytics for 1 days
+2025-07-18 18:06:08,105 - src.ai_processor - INFO - Processing document of length 570
+2025-07-18 18:06:08,107 - src.ai_processor - INFO - Document processed successfully: ClassificationType.CRITICAL_EQUIPMENT_FAILURE - PriorityLevel.CRITICAL
+2025-07-18 18:06:08,113 - src.database - INFO - Saved processing result: 7ec4b5b8-508d-4bf5-bb50-26fa9ed88b0f
+2025-07-18 18:06:10,120 - src.ai_processor - INFO - Processing document of length 508
+2025-07-18 18:06:10,121 - src.ai_processor - INFO - Document processed successfully: ClassificationType.NAVIGATIONAL_HAZARD - PriorityLevel.CRITICAL
+2025-07-18 18:06:10,130 - src.database - INFO - Saved processing result: b786a21d-7387-4435-a569-32a8c565633c
+2025-07-18 18:06:12,136 - src.ai_processor - INFO - Processing document of length 614
+2025-07-18 18:06:12,138 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ENVIRONMENTAL_COMPLIANCE - PriorityLevel.CRITICAL
+2025-07-18 18:06:12,143 - src.database - INFO - Saved processing result: 02d04185-c06a-4997-88fb-e02126aca651
+2025-07-18 18:06:14,148 - src.ai_processor - INFO - Processing document of length 531
+2025-07-18 18:06:14,149 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ROUTINE_MAINTENANCE - PriorityLevel.CRITICAL
+2025-07-18 18:06:14,156 - src.database - INFO - Saved processing result: e8ecfddb-008d-4832-9fd3-51b018ee5e87
+2025-07-18 18:06:16,163 - src.ai_processor - INFO - Processing document of length 510
+2025-07-18 18:06:16,164 - src.ai_processor - INFO - Document processed successfully: ClassificationType.SAFETY_VIOLATION - PriorityLevel.CRITICAL
+2025-07-18 18:06:16,169 - src.database - INFO - Saved processing result: 78e759ec-07ec-4381-b976-40c9fb4817f8
+2025-07-18 18:06:18,179 - src.ai_processor - INFO - Processing document of length 550
+2025-07-18 18:06:18,181 - src.ai_processor - INFO - Document processed successfully: ClassificationType.FUEL_EFFICIENCY - PriorityLevel.HIGH
+2025-07-18 18:06:18,187 - src.database - INFO - Saved processing result: 16c1d184-db82-4d04-8e5e-6080ec481168
+2025-07-18 18:06:20,193 - src.ai_processor - INFO - Processing document of length 525
+2025-07-18 18:06:20,195 - src.ai_processor - INFO - Document processed successfully: ClassificationType.CRITICAL_EQUIPMENT_FAILURE - PriorityLevel.CRITICAL
+2025-07-18 18:06:20,204 - src.database - INFO - Saved processing result: 43e36afe-115a-413d-b214-2ff4a09625eb
+2025-07-18 18:06:22,211 - src.ai_processor - INFO - Processing document of length 538
+2025-07-18 18:06:22,213 - src.ai_processor - INFO - Document processed successfully: ClassificationType.CRITICAL_EQUIPMENT_FAILURE - PriorityLevel.CRITICAL
+2025-07-18 18:06:22,219 - src.database - INFO - Saved processing result: a620a4df-b1af-4864-b654-f3e2ee4a2ccb
+2025-07-18 18:06:24,227 - src.ai_processor - INFO - Processing document of length 541
+2025-07-18 18:06:24,228 - src.ai_processor - INFO - Document processed successfully: ClassificationType.CRITICAL_EQUIPMENT_FAILURE - PriorityLevel.CRITICAL
+2025-07-18 18:06:24,234 - src.database - INFO - Saved processing result: 9fd6f4e0-1013-4009-93a3-47dbe194be0c
+2025-07-18 18:06:26,242 - src.ai_processor - INFO - Processing document of length 517
+2025-07-18 18:06:26,243 - src.ai_processor - INFO - Document processed successfully: ClassificationType.NAVIGATIONAL_HAZARD - PriorityLevel.CRITICAL
+2025-07-18 18:06:26,249 - src.database - INFO - Saved processing result: bcc782d0-b648-418d-a859-95c7318f94f7
+2025-07-18 18:06:26,256 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:06:26,258 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:06:26,258 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:07:21,285 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:07:21,286 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:07:21,286 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:07:29,515 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:07:29,516 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:07:29,516 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:07:29,516 - src.ai_processor - INFO - Processing document of length 30
+2025-07-18 18:07:29,517 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ROUTINE_MAINTENANCE - PriorityLevel.MEDIUM
+2025-07-18 18:07:29,517 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:07:29,518 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:07:29,518 - src.database - INFO - Generated analytics for 1 days
+2025-07-18 18:07:39,174 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:07:39,176 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:07:39,176 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:07:39,176 - src.ai_processor - INFO - Processing document of length 30
+2025-07-18 18:07:39,176 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ROUTINE_MAINTENANCE - PriorityLevel.MEDIUM
+2025-07-18 18:07:39,177 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:07:39,178 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:07:39,178 - src.database - INFO - Generated analytics for 1 days

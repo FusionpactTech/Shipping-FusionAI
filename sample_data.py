@@ -1,8 +1,26 @@
 #!/usr/bin/env python3
 """
-Sample data generator for the Vessel Maintenance AI System
-This script generates realistic vessel maintenance records, sensor alerts, and incident reports
-for testing and demonstration purposes.
+Vessel Maintenance AI System - Sample Data Generator
+
+This script generates realistic sample data for testing and demonstrating
+the vessel maintenance AI system. It creates various types of maintenance
+records, sensor alerts, and incident reports that showcase the system's
+classification and analysis capabilities.
+
+The script sends test documents to the running API server and displays
+the AI analysis results, providing a comprehensive demonstration of
+the system's features.
+
+Usage:
+    python sample_data.py
+
+Requirements:
+    - The main application server must be running on localhost:8000
+    - The requests library must be installed
+
+Author: AI Assistant
+Date: 2025-07-18
+Version: 1.0.0
 """
 
 import requests
@@ -11,7 +29,11 @@ import time
 import random
 from datetime import datetime, timedelta
 
-# Sample vessel maintenance records
+# Configuration
+API_BASE_URL = "http://localhost:8000"
+DEMO_DELAY = 2  # Seconds between requests for better demonstration
+
+# Sample vessel maintenance records demonstrating different classification types
 MAINTENANCE_RECORDS = [
     """
     Vessel ID: MV-ATLANTIC-001
@@ -21,268 +43,436 @@ MAINTENANCE_RECORDS = [
     During routine inspection of main engine, discovered oil leak from cylinder head gasket.
     Engine temperature readings showing 5-degree increase over normal operating range.
     Oil pressure maintaining within acceptable limits but showing gradual decline over past week.
-    Recommended immediate replacement of gasket and oil system check.
-    Engine room bilge shows oil contamination requiring cleanup.
+    Recommended immediate replacement of gasket and full system pressure test.
+    
+    Crew: Chief Engineer Martinez, Assistant Engineer Thompson
+    Equipment: Caterpillar 3516C Marine Engine
     """,
     
     """
-    Sensor Alert - Navigation System
-    Vessel: MV-PACIFIC-TRADER
-    Alert Time: 2024-01-16 14:30 UTC
-    
-    GPS navigation system showing intermittent signal loss.
-    Backup compass readings inconsistent with primary navigation.
-    Radar display experiencing periodic blackouts during storm conditions.
-    Bridge team reporting difficulty maintaining accurate position.
-    Weather conditions: Heavy rain, 8-foot swells, visibility reduced to 2 nautical miles.
-    """,
-    
-    """
-    Incident Report - Environmental Compliance
-    Vessel: MV-GLOBAL-CARRIER
-    Incident Date: 2024-01-17
-    
-    Accidental fuel discharge during bunkering operations.
-    Estimated 50 gallons of marine gas oil released into harbor waters.
-    Immediate containment booms deployed around vessel.
-    Port authorities notified and environmental response team activated.
-    Crew implementing emergency response procedures.
-    MARPOL Annex I violation requires immediate reporting to flag state.
-    """,
-    
-    """
-    Critical Equipment Failure Alert
-    Vessel: MV-NORTH-STAR
-    Date: 2024-01-18 02:15 UTC
-    
-    Generator #2 complete electrical failure during night watch.
-    Emergency generator automatically engaged but showing unstable voltage output.
-    Main propulsion system operating on backup power only.
-    Hull stress monitors indicating increased vibration levels.
-    Engineering team reports burning smell from electrical panel.
-    Immediate port call required for electrical system inspection.
-    """,
-    
-    """
-    Routine Maintenance Schedule
-    Vessel: MV-SOUTHERN-CROSS
-    Date: 2024-01-19
-    
-    Monthly safety equipment inspection completed.
-    Life jacket inspection: 2 jackets require replacement due to wear.
-    Fire extinguisher pressure check: All systems operational.
-    Emergency lighting test: Backup battery replacement needed in cargo hold.
-    Lifeboat davit lubrication completed successfully.
-    Water tank cleaning scheduled for next port call.
-    """,
-    
-    """
-    Safety Violation Report
-    Vessel: MV-EASTERN-WIND
+    Vessel ID: MV-PACIFIC-STAR
     Date: 2024-01-20
     
-    Safety inspection revealed missing safety barriers on upper deck.
-    Crew member reported near-miss incident during cargo operations.
-    Fire alarm system showing fault codes in engine room sector.
-    Emergency muster stations partially blocked by cargo containers.
-    Safety officer recommends immediate corrective action before departure.
-    ISM Code compliance review required.
+    CRITICAL NAVIGATION SYSTEM FAILURE:
+    GPS primary unit has completely failed during night watch. 
+    Backup GPS showing intermittent signal loss.
+    Radar system functioning but showing reduced range accuracy.
+    Ship currently navigating using compass and paper charts.
+    
+    IMMEDIATE ASSISTANCE REQUIRED - Position uncertainty in heavy traffic area.
+    
+    Bridge Officer: Captain Rodriguez
+    Location: 45°N 35°W (approximate)
     """,
     
     """
-    Navigational Hazard Alert
-    Vessel: MV-WESTERN-PRIDE
-    Date: 2024-01-21 18:45 UTC
+    Vessel ID: MV-CARGO-MASTER
+    Date: 2024-01-25
     
-    Collision avoidance system detected underwater obstacle not shown on charts.
-    Depth sounder readings inconsistent with charted depths in approach channel.
-    Harbor pilot reports dredging operations may have altered channel.
-    Vessel maintaining safe distance and reduced speed.
-    Coast Guard notified of potential navigational hazard.
+    Environmental Incident Report:
+    During fuel transfer operations in port, approximately 150 liters of marine diesel
+    spilled into harbor waters due to hose connection failure. 
+    
+    Spill containment booms deployed immediately.
+    Coast Guard and port authority notified as per MARPOL regulations.
+    Environmental cleanup crew dispatched.
+    
+    This constitutes a breach of environmental compliance protocols.
+    Full investigation and corrective measures required.
+    
+    Environmental Officer: Sarah Johnson
+    Port: Rotterdam
     """,
     
     """
-    Engine Room Temperature Alert
-    Vessel: MV-ARCTIC-EXPLORER
-    Date: 2024-01-22
+    Vessel ID: MV-OCEAN-BREEZE
+    Date: 2024-01-30
     
-    Main engine cooling system showing elevated temperatures.
-    Coolant levels dropping despite recent top-off.
-    Heat exchanger performance degraded, requires cleaning.
-    Engine room ventilation fans operating at maximum capacity.
-    Thermal imaging shows hot spots on exhaust manifold.
-    Reducing engine load to prevent damage.
+    Routine Maintenance Schedule:
+    Weekly inspection completed on all safety equipment.
+    Life jackets - 48 units inspected, 3 require replacement
+    Fire extinguishers - all pressure levels normal
+    Emergency lighting - 2 units need battery replacement
+    
+    Scheduled for next port call maintenance:
+    - Air filter replacement (due in 50 hours)
+    - Oil change (due in 75 hours)
+    - Pump bearing lubrication
+    
+    Maintenance Supervisor: Mike Chen
     """,
     
     """
-    Hull Inspection Report
-    Vessel: MV-TROPICAL-BREEZE
-    Date: 2024-01-23
+    Vessel ID: MV-NORDIC-WIND
+    Date: 2024-02-05
     
-    Underwater hull inspection revealed minor corrosion on port side plating.
-    Anti-fouling coating showing wear at waterline.
-    Propeller performance slightly reduced due to marine growth.
-    No structural damage detected but monitoring required.
-    Dry dock maintenance recommended within 6 months.
+    Safety Violation Incident:
+    Crew member found working on deck without proper personal protective equipment.
+    No safety harness used while working near rail in rough sea conditions.
+    
+    Incident occurred during cargo securing operations.
+    Immediate safety briefing conducted for all deck crew.
+    Written warning issued to crew member.
+    
+    All safety protocols must be strictly enforced.
+    
+    Safety Officer: David Wilson
     """,
     
     """
-    Fuel System Anomaly
-    Vessel: MV-DESERT-WIND
-    Date: 2024-01-24 11:20 UTC
+    Vessel ID: MV-FUEL-EFFICIENT
+    Date: 2024-02-10
     
-    Fuel consumption rate 15% higher than normal for current voyage conditions.
-    Fuel quality testing shows higher sulfur content than specified.
-    Engine performance monitoring indicates incomplete combustion.
-    Fuel filters requiring more frequent replacement.
-    Investigation needed to determine if fuel contamination present.
+    Fuel Efficiency Alert:
+    Fuel consumption has increased by 15% over past voyage compared to normal operations.
+    Current consumption: 45 tons/day (normal: 39 tons/day)
+    
+    Possible causes:
+    - Hull fouling (last cleaning 8 months ago)
+    - Engine performance degradation
+    - Adverse weather conditions
+    
+    Recommend hull inspection and engine tuning during next dry dock.
+    Consider speed optimization for remaining voyage.
+    
+    Chief Engineer: Anna Petrov
+    """,
+    
+    """
+    Vessel ID: MV-SENSOR-WATCH
+    Date: 2024-02-15
+    
+    Sensor Anomaly Alert:
+    Temperature sensors in engine room showing unusual readings:
+    - Sensor A1: 95°C (normal: 75°C)
+    - Sensor B2: Temperature fluctuating between 65-85°C
+    - Cooling water pressure: 4.2 bar (normal: 5.5 bar)
+    
+    Manual temperature checks confirm elevated readings.
+    Cooling system efficiency appears compromised.
+    
+    Recommend immediate cooling system inspection and pump check.
+    
+    Watch Engineer: Tom Anderson
+    """,
+    
+    """
+    Vessel ID: MV-STORM-RIDER
+    Date: 2024-02-20
+    
+    Severe Weather Incident Report:
+    Vessel encountered Force 9 gale conditions with 12-meter waves.
+    During heavy rolling, cargo containers shifted causing:
+    - Minor damage to container guides on deck
+    - Loose lashing requiring immediate attention
+    - Bridge window cracked from wave impact
+    
+    All crew accounted for and safe.
+    Speed reduced to 8 knots for safety.
+    ETA delayed by 6 hours.
+    
+    Master: Captain Lisa Chang
+    Position: 52°N 15°W
+    """,
+    
+    """
+    Vessel ID: MV-MAINTENANCE-MASTER
+    Date: 2024-02-25
+    
+    Preventive Maintenance Completion Report:
+    Monthly maintenance schedule completed successfully:
+    
+    ✓ Engine oil analysis - results within normal parameters
+    ✓ Fuel filters replaced - 3 primary, 2 secondary
+    ✓ Steering gear lubrication completed
+    ✓ Emergency generator tested - 30-minute full load test passed
+    ✓ Fire suppression system inspection completed
+    
+    Next scheduled maintenance: March 25, 2024
+    
+    Chief Engineer: Roberto Silva
+    """,
+    
+    """
+    Vessel ID: MV-TECH-INNOVATION
+    Date: 2024-03-01
+    
+    Equipment Malfunction Report:
+    Autopilot system experiencing intermittent failures.
+    System disconnects randomly every 2-3 hours requiring manual steering.
+    Gyrocompass readings appear stable.
+    
+    Preliminary diagnosis suggests software corruption or sensor malfunction.
+    Manual steering capabilities confirmed operational.
+    
+    Recommend technical support consultation at next port.
+    
+    Navigation Officer: Emma Thompson
     """
 ]
 
-SENSOR_ALERTS = [
-    """
-    CRITICAL ALARM: Engine overpressure detected
-    Vessel: MV-STORM-RIDER
-    Sensor: Main Engine Pressure Monitor
-    Reading: 125 PSI (Normal: 80-100 PSI)
-    
-    Automatic engine shutdown initiated to prevent damage.
-    Backup propulsion systems activated.
-    Engineering team investigating pressure relief valve malfunction.
-    """,
-    
-    """
-    WARNING: Bilge water level rising
-    Vessel: MV-OCEAN-PEARL
-    Sensor: Bilge Level Monitor - Engine Room
-    
-    Water level increased 6 inches in past 2 hours.
-    Bilge pumps activated but unable to maintain normal levels.
-    Source of water ingress under investigation.
-    Hull integrity check recommended.
-    """,
-    
-    """
-    ALERT: Fire detection system activated
-    Vessel: MV-CARGO-MASTER
-    Location: Cargo Hold #3
-    Sensor: Smoke Detection Array
-    
-    Elevated particulate levels detected in cargo compartment.
-    Fire suppression system on standby.
-    Crew conducting visual inspection of cargo hold.
-    No visible flames or smoke reported.
-    """,
-    
-    """
-    ANOMALY: Fuel leak detection
-    Vessel: MV-TRADE-WINDS
-    Sensor: Hydrocarbon Detector - Fuel Tank Area
-    
-    Fuel vapor concentrations above normal threshold.
-    Tank level monitoring shows gradual decrease.
-    Potential leak in fuel line connections.
-    Ventilation systems increased to maximum.
-    """
-]
+def print_banner():
+    """Display the application banner and introduction."""
+    print("\n" + "="*80)
+    print("🚢 VESSEL MAINTENANCE AI SYSTEM - SAMPLE DATA DEMONSTRATION")
+    print("="*80)
+    print("\nThis demonstration will process various types of vessel maintenance")
+    print("documents to showcase the AI system's classification capabilities.")
+    print("\nDocument types included:")
+    print("• Critical Equipment Failures")
+    print("• Navigational Hazard Alerts") 
+    print("• Environmental Compliance Breaches")
+    print("• Routine Maintenance Records")
+    print("• Safety Violation Reports")
+    print("• Fuel Efficiency Alerts")
+    print("• Sensor Anomaly Alerts")
+    print("• Incident Reports")
+    print("\n" + "-"*80)
 
-def send_sample_data(base_url="http://localhost:8000"):
-    """Send sample data to the vessel maintenance AI system"""
-    print("🚢 Sending sample vessel maintenance data to AI system...")
+def check_server_availability():
+    """
+    Check if the API server is running and accessible.
     
-    all_samples = MAINTENANCE_RECORDS + SENSOR_ALERTS
-    
-    for i, sample in enumerate(all_samples):
-        try:
-            print(f"\n📄 Processing sample {i+1}/{len(all_samples)}")
-            
-            response = requests.post(
-                f"{base_url}/process/text",
-                json={"text": sample},
-                headers={"Content-Type": "application/json"},
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                results = response.json()
-                print(f"✅ Successfully processed - {len(results)} results generated")
-                
-                for result in results:
-                    print(f"   🏷️  Classification: {result['classification']}")
-                    print(f"   ⚠️  Priority: {result['priority']}")
-                    print(f"   📋 Summary: {result['summary'][:100]}...")
-            else:
-                print(f"❌ Error: {response.status_code} - {response.text}")
-                
-        except requests.exceptions.RequestException as e:
-            print(f"❌ Network error: {e}")
-            
-        # Add small delay between requests
-        time.sleep(1)
-    
-    print("\n🎉 Sample data loading completed!")
-    print(f"🌐 View results at: {base_url}")
+    Returns:
+        bool: True if server is accessible, False otherwise
+    """
+    try:
+        response = requests.get(f"{API_BASE_URL}/health", timeout=5)
+        if response.status_code == 200:
+            print("✅ API server is running and accessible")
+            return True
+        else:
+            print(f"❌ API server returned status code: {response.status_code}")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Unable to connect to API server: {e}")
+        print("Please ensure the server is running on localhost:8000")
+        return False
 
-def generate_real_time_alerts(base_url="http://localhost:8000", duration_minutes=5):
-    """Generate real-time alerts for demonstration"""
-    print(f"🔄 Generating real-time alerts for {duration_minutes} minutes...")
+def process_document(text, vessel_id=None, document_type=None):
+    """
+    Process a single document through the API.
     
-    emergency_scenarios = [
-        "EMERGENCY: Engine room fire alarm activated. Crew evacuating engine compartment.",
-        "CRITICAL: Main engine seized. Complete loss of propulsion. Dead in water.",
-        "URGENT: Hull breach detected in cargo hold. Water ingress rate increasing.",
-        "ALERT: GPS navigation system failure. Vessel operating on backup compass only.",
-        "WARNING: Fuel contamination detected. Engine performance degraded.",
-        "CRITICAL: Steering system hydraulic failure. Manual steering activated.",
-        "EMERGENCY: Man overboard alarm. Search and rescue operations initiated.",
-        "URGENT: Generator failure. Emergency power systems activated."
-    ]
+    Args:
+        text (str): Document text to process
+        vessel_id (str, optional): Vessel identifier
+        document_type (str, optional): Type of document
     
-    end_time = datetime.now() + timedelta(minutes=duration_minutes)
+    Returns:
+        dict: API response or None if failed
+    """
+    try:
+        payload = {
+            "text": text,
+            "vessel_id": vessel_id,
+            "document_type": document_type
+        }
+        
+        response = requests.post(
+            f"{API_BASE_URL}/process/text", 
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"❌ Error processing document: {response.status_code}")
+            print(f"   Response: {response.text}")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error: {e}")
+        return None
+
+def display_result(result, index):
+    """
+    Display the processing result in a formatted manner.
     
-    while datetime.now() < end_time:
-        try:
-            # Random delay between alerts (15-60 seconds)
-            delay = random.randint(15, 60)
-            time.sleep(delay)
-            
-            # Select random emergency scenario
-            alert = random.choice(emergency_scenarios)
-            vessel_id = f"MV-DEMO-{random.randint(100, 999)}"
-            
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
-            full_alert = f"Vessel ID: {vessel_id}\nTimestamp: {timestamp}\n\n{alert}"
-            
-            response = requests.post(
-                f"{base_url}/process/text",
-                json={"text": full_alert},
-                headers={"Content-Type": "application/json"},
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                results = response.json()
-                print(f"🚨 REAL-TIME ALERT: {results[0]['classification']} - {results[0]['priority']}")
-            
-        except Exception as e:
-            print(f"⚠️  Alert generation error: {e}")
+    Args:
+        result (dict): Processing result from the API
+        index (int): Document index for numbering
+    """
+    if not result:
+        return
+        
+    print(f"\n📋 DOCUMENT {index + 1} ANALYSIS RESULTS:")
+    print("-" * 50)
     
-    print("✅ Real-time alert generation completed!")
+    # Basic information
+    print(f"🏷️  Classification: {result.get('classification', 'Unknown')}")
+    print(f"🚨 Priority: {result.get('priority', 'Unknown')}")
+    print(f"📊 Confidence: {result.get('confidence_score', 0):.2%}")
+    print(f"📄 Document Type: {result.get('document_type', 'Unknown')}")
+    
+    # Summary and details
+    print(f"\n📝 Summary:")
+    print(f"   {result.get('summary', 'No summary available')}")
+    
+    # Risk assessment
+    print(f"\n⚠️  Risk Assessment:")
+    print(f"   {result.get('risk_assessment', 'No risk assessment available')}")
+    
+    # Keywords
+    keywords = result.get('keywords', [])
+    if keywords:
+        print(f"\n🔑 Key Terms: {', '.join(keywords[:8])}{'...' if len(keywords) > 8 else ''}")
+    
+    # Entities
+    entities = result.get('entities', {})
+    if entities:
+        print(f"\n🔍 Extracted Entities:")
+        for entity_type, entity_list in entities.items():
+            if entity_list:
+                print(f"   {entity_type.title()}: {', '.join(entity_list[:3])}{'...' if len(entity_list) > 3 else ''}")
+    
+    # Recommended actions
+    recommendations = result.get('recommended_actions', [])
+    if recommendations:
+        print(f"\n💡 Recommended Actions:")
+        for i, action in enumerate(recommendations[:5], 1):
+            print(f"   {i}. {action}")
+        if len(recommendations) > 5:
+            print(f"   ... and {len(recommendations) - 5} more actions")
+    
+    print("\n" + "="*60)
+
+def get_analytics():
+    """
+    Retrieve and display system analytics.
+    
+    Returns:
+        dict: Analytics data or None if failed
+    """
+    try:
+        response = requests.get(f"{API_BASE_URL}/analytics", timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"❌ Error getting analytics: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error getting analytics: {e}")
+        return None
+
+def display_analytics(analytics):
+    """
+    Display system analytics in a formatted manner.
+    
+    Args:
+        analytics (dict): Analytics data from the API
+    """
+    if not analytics:
+        return
+        
+    print("\n" + "="*80)
+    print("📊 SYSTEM ANALYTICS SUMMARY")
+    print("="*80)
+    
+    # Overall statistics
+    print(f"📈 Total Documents Processed: {analytics.get('total_processed', 0)}")
+    print(f"🚨 Critical Alerts: {analytics.get('critical_alerts', 0)}")
+    
+    # Classification breakdown
+    classification_breakdown = analytics.get('classification_breakdown', {})
+    if classification_breakdown:
+        print(f"\n🏷️  Classification Breakdown:")
+        for classification, count in classification_breakdown.items():
+            print(f"   • {classification}: {count}")
+    
+    # Priority breakdown  
+    priority_breakdown = analytics.get('priority_breakdown', {})
+    if priority_breakdown:
+        print(f"\n🚨 Priority Level Distribution:")
+        for priority, count in priority_breakdown.items():
+            print(f"   • {priority}: {count}")
+    
+    # Recent trends
+    recent_trends = analytics.get('recent_trends', [])
+    if recent_trends:
+        print(f"\n📅 Recent Activity (Last 7 Days):")
+        for trend in recent_trends[:7]:
+            date = trend.get('date', 'Unknown')
+            count = trend.get('count', 0)
+            print(f"   • {date}: {count} documents")
+    
+    print("\n" + "="*80)
+
+def main():
+    """
+    Main function to run the sample data demonstration.
+    
+    This function orchestrates the entire demonstration process including
+    server checks, document processing, and analytics display.
+    """
+    # Display introduction
+    print_banner()
+    
+    # Check if server is running
+    if not check_server_availability():
+        print("\n❌ Cannot proceed without server connection.")
+        print("Please start the server with: python app.py")
+        return
+    
+    # Process sample documents
+    print(f"\n🔄 Processing {len(MAINTENANCE_RECORDS)} sample documents...")
+    print("(Processing with 2-second delays for demonstration purposes)")
+    
+    successful_processes = 0
+    
+    for i, document in enumerate(MAINTENANCE_RECORDS):
+        print(f"\n⏳ Processing document {i + 1}/{len(MAINTENANCE_RECORDS)}...")
+        
+        # Extract vessel ID from document if available
+        vessel_id = None
+        lines = document.strip().split('\n')
+        for line in lines:
+            if 'Vessel ID:' in line:
+                vessel_id = line.split('Vessel ID:')[1].strip()
+                break
+        
+        # Process the document
+        result = process_document(
+            text=document,
+            vessel_id=vessel_id,
+            document_type="Sample Data"
+        )
+        
+        if result:
+            display_result(result, i)
+            successful_processes += 1
+        else:
+            print(f"❌ Failed to process document {i + 1}")
+        
+        # Add delay for demonstration purposes
+        if i < len(MAINTENANCE_RECORDS) - 1:
+            time.sleep(DEMO_DELAY)
+    
+    # Display summary
+    print(f"\n✅ Successfully processed {successful_processes}/{len(MAINTENANCE_RECORDS)} documents")
+    
+    # Get and display analytics
+    print("\n⏳ Generating analytics summary...")
+    analytics = get_analytics()
+    display_analytics(analytics)
+    
+    # Final message
+    print("\n🎉 DEMONSTRATION COMPLETE!")
+    print("\nThe Vessel Maintenance AI System has successfully processed various")
+    print("types of maritime documents and provided intelligent classifications")
+    print("and actionable recommendations.")
+    print("\n💡 Next steps:")
+    print("• Visit http://localhost:8000 for the web interface")
+    print("• View analytics at http://localhost:8000/analytics")
+    print("• Check system health at http://localhost:8000/health")
+    print("• Review processing history at http://localhost:8000/history")
 
 if __name__ == "__main__":
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Generate sample data for Vessel Maintenance AI")
-    parser.add_argument("--url", default="http://localhost:8000", help="Base URL of the API")
-    parser.add_argument("--realtime", action="store_true", help="Generate real-time alerts")
-    parser.add_argument("--duration", type=int, default=5, help="Duration for real-time alerts (minutes)")
-    
-    args = parser.parse_args()
-    
-    print("🌊 Vessel Maintenance AI - Sample Data Generator")
-    print("=" * 50)
-    
-    if args.realtime:
-        generate_real_time_alerts(args.url, args.duration)
-    else:
-        send_sample_data(args.url)
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n⏹️  Demonstration interrupted by user.")
+        print("Thank you for testing the Vessel Maintenance AI System!")
+    except Exception as e:
+        print(f"\n❌ Unexpected error during demonstration: {e}")
+        print("Please check the server logs for more details.")

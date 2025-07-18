@@ -171,3 +171,19 @@ If this doesn't fix the problem, file an issue at https://github.com/sloria/Text
 2025-07-18 18:19:01,901 - src.database - INFO - Database initialized successfully
 2025-07-18 18:19:01,915 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
 2025-07-18 18:19:01,915 - src.database - INFO - Database initialized successfully
+2025-07-18 18:46:33,028 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:46:47,590 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:46:47,590 - src.database - INFO - Database initialized successfully
+2025-07-18 18:46:47,603 - src.ai_processor - INFO - Using NLTK and TextBlob for NLP processing
+2025-07-18 18:46:47,603 - src.database - INFO - Database initialized successfully
+2025-07-18 18:46:53,995 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:46:53,996 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:46:53,996 - src.database - INFO - Generated analytics for 30 days
+2025-07-18 18:46:53,997 - src.ai_processor - INFO - Processing document of length 30
+2025-07-18 18:46:55,246 - src.ai_processor - INFO - Document processed successfully: ClassificationType.ROUTINE_MAINTENANCE - PriorityLevel.MEDIUM
+2025-07-18 18:46:55,247 - src.database - WARNING - Error retrieving cached analytics: no such column: cache_data
+2025-07-18 18:46:55,248 - src.database - WARNING - Error caching analytics: table analytics_cache has no column named cache_data
+2025-07-18 18:46:55,248 - src.database - INFO - Generated analytics for 1 days
+2025-07-18 18:47:01,700 - src.ai_processor - INFO - Processing document of length 78
+2025-07-18 18:47:01,702 - src.ai_processor - INFO - Document processed successfully: ClassificationType.CRITICAL_EQUIPMENT_FAILURE - PriorityLevel.CRITICAL
+2025-07-18 18:47:01,707 - src.database - INFO - Saved processing result: 64bb2bd5-c384-48fb-9937-5076345ddadf

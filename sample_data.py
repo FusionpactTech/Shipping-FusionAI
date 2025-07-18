@@ -18,9 +18,13 @@ Requirements:
     - The main application server must be running on localhost:8000
     - The requests library must be installed
 
-Author: AI Assistant
+Author: Fusionpact Technologies Inc.
 Date: 2025-07-18
 Version: 1.0.0
+License: MIT License
+
+Copyright (c) 2025 Fusionpact Technologies Inc.
+Licensed under the MIT License. See LICENSE file for details.
 """
 
 import requests

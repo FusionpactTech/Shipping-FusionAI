@@ -13,9 +13,13 @@ Key Features:
 - Query optimization for reporting
 - Data backup and recovery support
 
-Author: AI Assistant
+Author: Fusionpact Technologies Inc.
 Date: 2025-07-18
 Version: 1.0.0
+License: MIT License
+
+Copyright (c) 2025 Fusionpact Technologies Inc.
+Licensed under the MIT License. See LICENSE file for details.
 """
 
 import sqlite3

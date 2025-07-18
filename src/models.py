@@ -11,9 +11,13 @@ Key Components:
 - Data validation and serialization
 - Type hints for improved code safety
 
-Author: AI Assistant
+Author: Fusionpact Technologies Inc.
 Date: 2025-07-18
 Version: 1.0.0
+License: MIT License
+
+Copyright (c) 2025 Fusionpact Technologies Inc.
+Licensed under the MIT License. See LICENSE file for details.
 """
 
 from pydantic import BaseModel, Field

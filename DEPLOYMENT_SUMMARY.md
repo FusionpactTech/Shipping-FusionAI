@@ -4,6 +4,9 @@
 
 The Vessel Maintenance AI System has been successfully deployed with comprehensive comments, documentation, and full functionality. The system is now production-ready for processing vessel maintenance records, sensor anomaly alerts, and incident reports.
 
+**Copyright (c) 2025 Fusionpact Technologies Inc.**  
+**Licensed under the MIT License**
+
 ---
 
 ## 📋 **System Overview**

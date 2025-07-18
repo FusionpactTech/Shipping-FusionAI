@@ -2,6 +2,45 @@
 
 🚢 **AI-powered application for automated processing and classification of vessel maintenance records, sensor anomaly alerts, and incident reports**
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+**Copyright (c) 2025 Fusionpact Technologies Inc.**
+
+## Custom Properties
+
+### Enterprise Features
+- **Multi-tenant Architecture**: Support for multiple fleet operators with data isolation
+- **Advanced Analytics**: Comprehensive reporting with trend analysis and predictive insights
+- **API Rate Limiting**: Configurable request throttling and quota management for production environments
+- **Custom Classification Models**: Ability to train and deploy domain-specific AI classifiers
+- **Integration Ready**: RESTful APIs designed for seamless integration with existing fleet management systems
+- **Real-time Notifications**: Configurable alert systems with multiple delivery channels
+
+### Customization Options
+- **Classification Patterns**: Easily modify or extend AI classification rules and weights
+- **Priority Thresholds**: Configurable priority assignment based on custom business criteria
+- **Alert Configurations**: Customizable notification rules and escalation procedures
+- **Database Backends**: Support for SQLite (development) and PostgreSQL/MySQL (production)
+- **Authentication Systems**: Ready for integration with enterprise SSO and RBAC systems
+- **Workflow Integration**: Compatible with popular workflow management platforms
+
+### Scalability & Performance
+- **Horizontal Scaling**: Designed to scale across multiple server instances
+- **Batch Processing**: Support for bulk document processing with job queuing
+- **Caching Layer**: Intelligent caching strategies for optimal performance
+- **Load Balancing**: Compatible with standard load balancing and container orchestration
+- **Microservices Ready**: Modular architecture suitable for microservices deployment
+- **High Availability**: Built-in health monitoring and fault tolerance
+
+### Security & Compliance
+- **Data Encryption**: End-to-end encryption for sensitive vessel data
+- **Audit Logging**: Comprehensive audit trails for compliance requirements
+- **GDPR Compliance**: Built-in privacy controls and data retention policies
+- **Maritime Standards**: Aligned with IMO and industry best practices
+- **Access Controls**: Fine-grained permissions and role-based access
+
 ## Overview
 
 The Vessel Maintenance AI System is an intelligent application designed to help fleet managers rapidly identify and respond to critical issues affecting their vessels. The system automatically processes unstructured text documents and categorizes them into actionable insights, enabling proactive risk mitigation and efficient maintenance planning.

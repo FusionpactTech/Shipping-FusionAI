@@ -132,27 +132,83 @@ The system classifies documents into predefined action categories:
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/FusionpactTech/Shipping-FusionAI.git
    cd Shipping-FusionAI
    ```
 
-2. **Install dependencies**
+2. **Create virtual environment (recommended)**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # or venv\Scripts\activate  # Windows
+   ```
+
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Download NLP models (optional but recommended)**
+4. **Download NLP data (optional but recommended)**
    ```bash
-   python -m spacy download en_core_web_sm
+   python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('vader_lexicon')"
    ```
 
-4. **Start the application**
+5. **Start the application**
    ```bash
    python app.py
    ```
+   
+   You should see output similar to:
+   ```
+   🚢 Vessel Maintenance AI System Starting...
+   🌐 Server will be available at: http://localhost:8000
+   📊 Analytics: http://localhost:8000/analytics
+   💊 Health Check: http://localhost:8000/health
+   ⚙️  Configuration: http://localhost:8000/config
+   📖 API Docs: http://localhost:8000/docs
+   ```
 
-5. **Access the dashboard**
+6. **Access the dashboard**
    Open your browser to: http://localhost:8000
+   
+   **Note**: Make sure the server is running (step 5) before accessing the dashboard. If the link doesn't work, check that:
+   - The server started without errors
+   - No firewall is blocking port 8000
+   - You're accessing from the same machine where the server is running
+
+### Troubleshooting
+
+If you encounter issues accessing http://localhost:8000:
+
+1. **Server not starting?**
+   ```bash
+   # Check if port 8000 is already in use
+   lsof -i :8000
+   
+   # Kill any existing process on port 8000
+   sudo kill -9 $(lsof -t -i :8000)
+   ```
+
+2. **Import errors?**
+   ```bash
+   # Ensure virtual environment is activated
+   source venv/bin/activate  # Linux/Mac
+   # or venv\Scripts\activate  # Windows
+   
+   # Reinstall dependencies
+   pip install -r requirements.txt
+   ```
+
+3. **NLTK data missing?**
+   ```bash
+   python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('vader_lexicon')"
+   ```
+
+4. **Test the installation**
+   ```bash
+   # Quick test to verify everything works
+   curl http://localhost:8000/health
+   ```
 
 ### Advanced Setup
 

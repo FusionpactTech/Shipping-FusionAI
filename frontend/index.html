@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vessel Maintenance AI System - Fusionpact Technologies</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-ship"></i>
+                <span>Vessel Maintenance AI</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#process" class="nav-link" data-section="process">
+                    <i class="fas fa-brain"></i> AI Processing
+                </a>
+                <a href="#analytics" class="nav-link" data-section="analytics">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+                <a href="#history" class="nav-link" data-section="history">
+                    <i class="fas fa-history"></i> History
+                </a>
+                <a href="#settings" class="nav-link" data-section="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-outline" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Maritime AI Dashboard</h1>
+                    <p>Real-time vessel maintenance monitoring and AI-powered analysis</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon critical">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="criticalAlerts">0</h3>
+                            <p>Critical Alerts</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon processed">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalProcessed">0</h3>
+                            <p>Documents Processed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon vessels">
+                            <i class="fas fa-ship"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="activeVessels">0</h3>
+                            <p>Active Vessels</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon efficiency">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="efficiency">98.5%</h3>
+                            <p>System Efficiency</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h2>Quick Actions</h2>
+                    <div class="action-buttons">
+                        <button class="action-btn" data-action="process-document">
+                            <i class="fas fa-upload"></i>
+                            <span>Process Document</span>
+                        </button>
+                        <button class="action-btn" data-action="view-analytics">
+                            <i class="fas fa-analytics"></i>
+                            <span>View Analytics</span>
+                        </button>
+                        <button class="action-btn" data-action="generate-report">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Generate Report</span>
+                        </button>
+                        <button class="action-btn" data-action="system-health">
+                            <i class="fas fa-heartbeat"></i>
+                            <span>System Health</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-list" id="recentActivity">
+                        <!-- Activity items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Processing Section -->
+        <section id="process" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>AI Document Processing</h1>
+                    <p>Upload and analyze vessel maintenance documents with AI</p>
+                </div>
+
+                <div class="processing-grid">
+                    <!-- Text Input Panel -->
+                    <div class="processing-panel">
+                        <h3><i class="fas fa-keyboard"></i> Text Input</h3>
+                        <form id="textProcessingForm">
+                            <div class="form-group">
+                                <label for="documentType">Document Type</label>
+                                <select id="documentType" name="document_type">
+                                    <option value="">Auto-detect</option>
+                                    <option value="Maintenance Record">Maintenance Record</option>
+                                    <option value="Sensor Alert">Sensor Alert</option>
+                                    <option value="Incident Report">Incident Report</option>
+                                    <option value="Inspection Report">Inspection Report</option>
+                                    <option value="Compliance Document">Compliance Document</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="vesselId">Vessel ID (Optional)</label>
+                                <input type="text" id="vesselId" name="vessel_id" placeholder="e.g., VESSEL-001">
+                            </div>
+                            <div class="form-group">
+                                <label for="documentText">Document Content</label>
+                                <textarea id="documentText" name="text" rows="10" 
+                                    placeholder="Paste your maintenance report, sensor alert, or incident report here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-brain"></i> Process with AI
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- File Upload Panel -->
+                    <div class="processing-panel">
+                        <h3><i class="fas fa-upload"></i> File Upload</h3>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h4>Drag & Drop Files Here</h4>
+                                <p>or click to browse</p>
+                                <input type="file" id="fileInput" multiple accept=".txt,.pdf,.doc,.docx">
+                            </div>
+                        </div>
+                        <div class="upload-info">
+                            <p><strong>Supported formats:</strong> TXT, PDF, DOC, DOCX</p>
+                            <p><strong>Max file size:</strong> 10MB</p>
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+                </div>
+
+                <!-- Processing Results -->
+                <div id="processingResults" class="processing-results" style="display: none;">
+                    <h3>Analysis Results</h3>
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <h4>Classification</h4>
+                            <div id="classificationResult" class="classification-badge"></div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Priority Level</h4>
+                            <div id="priorityResult" class="priority-badge"></div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Confidence Score</h4>
+                            <div id="confidenceScore" class="confidence-meter"></div>
+                        </div>
+                    </div>
+                    <div class="result-details">
+                        <div class="detail-section">
+                            <h4>Summary</h4>
+                            <p id="summaryText"></p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>Key Entities</h4>
+                            <div id="entitiesContainer"></div>
+                        </div>
+                        <div class="detail-section">
+                            <h4>Keywords</h4>
+                            <div id="keywordsContainer"></div>
+                        </div>
+                        <div class="detail-section">
+                            <h4>Recommended Actions</h4>
+                            <ul id="recommendationsContainer"></ul>
+                        </div>
+                        <div class="detail-section">
+                            <h4>Risk Assessment</h4>
+                            <p id="riskAssessment"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Analytics Dashboard</h1>
+                    <p>Comprehensive insights and performance metrics</p>
+                </div>
+
+                <!-- Analytics Controls -->
+                <div class="analytics-controls">
+                    <div class="time-filter">
+                        <label>Time Period:</label>
+                        <select id="timeFilter">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">Last year</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-outline" id="refreshAnalytics">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Classification Distribution</h3>
+                        <canvas id="classificationChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Priority Breakdown</h3>
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Processing Trends</h3>
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Vessel Activity</h3>
+                        <canvas id="vesselChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Analytics Summary -->
+                <div class="analytics-summary">
+                    <h3>Summary Insights</h3>
+                    <div id="analyticsInsights" class="insights-container">
+                        <!-- Insights will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="history" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Processing History</h1>
+                    <p>View and search through previously processed documents</p>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="history-controls">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="historySearch" placeholder="Search documents...">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="classificationFilter">
+                            <option value="">All Classifications</option>
+                            <option value="Critical Equipment Failure Risk">Critical Equipment Failure</option>
+                            <option value="Navigational Hazard Alert">Navigational Hazard</option>
+                            <option value="Environmental Compliance Breach">Environmental Compliance</option>
+                            <option value="Routine Maintenance Required">Routine Maintenance</option>
+                            <option value="Safety Violation Detected">Safety Violation</option>
+                            <option value="Fuel Efficiency Alert">Fuel Efficiency</option>
+                        </select>
+                        <select id="priorityFilter">
+                            <option value="">All Priorities</option>
+                            <option value="Critical">Critical</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                        <input type="text" id="vesselFilter" placeholder="Vessel ID">
+                    </div>
+                </div>
+
+                <!-- History Table -->
+                <div class="history-table-container">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Document Type</th>
+                                <th>Classification</th>
+                                <th>Priority</th>
+                                <th>Vessel ID</th>
+                                <th>Confidence</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- History items will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="historyPagination">
+                    <!-- Pagination controls will be generated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>System Settings</h1>
+                    <p>Configure system preferences and advanced options</p>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- System Health -->
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-heartbeat"></i> System Health</h3>
+                        <div id="systemHealth" class="health-status">
+                            <div class="health-item">
+                                <span>API Status:</span>
+                                <span id="apiStatus" class="status-indicator">Checking...</span>
+                            </div>
+                            <div class="health-item">
+                                <span>Database:</span>
+                                <span id="dbStatus" class="status-indicator">Checking...</span>
+                            </div>
+                            <div class="health-item">
+                                <span>AI Processor:</span>
+                                <span id="aiStatus" class="status-indicator">Checking...</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" id="checkHealth">
+                            <i class="fas fa-sync-alt"></i> Check Health
+                        </button>
+                    </div>
+
+                    <!-- Configuration -->
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-cogs"></i> Configuration</h3>
+                        <div id="systemConfig" class="config-details">
+                            <!-- Configuration details will be populated -->
+                        </div>
+                        <button class="btn btn-outline" id="loadConfig">
+                            <i class="fas fa-download"></i> Load Config
+                        </button>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-database"></i> Data Management</h3>
+                        <div class="data-actions">
+                            <button class="btn btn-warning" id="cleanupData">
+                                <i class="fas fa-broom"></i> Cleanup Old Data
+                            </button>
+                            <button class="btn btn-info" id="exportData">
+                                <i class="fas fa-download"></i> Export Data
+                            </button>
+                            <button class="btn btn-secondary" id="loadSampleData">
+                                <i class="fas fa-upload"></i> Load Sample Data
+                            </button>
+                        </div>
+                        <div class="cleanup-options">
+                            <label>Keep data for:</label>
+                            <select id="cleanupDays">
+                                <option value="30">30 days</option>
+                                <option value="90" selected>90 days</option>
+                                <option value="180">180 days</option>
+                                <option value="365">1 year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="settings-panel">
+                        <h3><i class="fas fa-bell"></i> Notifications</h3>
+                        <div class="notification-settings">
+                            <label class="toggle-setting">
+                                <span>Critical Alerts</span>
+                                <input type="checkbox" id="criticalNotifications" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <label class="toggle-setting">
+                                <span>Processing Complete</span>
+                                <input type="checkbox" id="processingNotifications" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <label class="toggle-setting">
+                                <span>System Updates</span>
+                                <input type="checkbox" id="systemNotifications">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="notification-toast">
+        <div class="toast-content">
+            <span id="toastMessage"></span>
+            <button id="toastClose"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <!-- Modal for Results Details -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

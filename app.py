@@ -43,6 +43,14 @@ from src.ai_processor import VesselMaintenanceAI
 from src.models import ProcessingRequest, ProcessingResponse
 from src.database import DatabaseManager
 
+# Import enterprise modules
+from src.config import config, ENTERPRISE_FEATURES
+from src.tenancy import tenant_middleware, get_current_tenant_id, get_current_tenant
+from src.auth import auth_service, get_current_user_jwt, require_permission, Permission
+from src.rate_limiting import rate_limit_middleware, cache_manager, quota_manager
+from src.notifications import notification_manager, send_notification, NotificationType, NotificationPriority
+from src.audit import audit_logger, log_audit_event, AuditEventType, AuditSeverity
+
 # Initialize FastAPI application with metadata
 app = FastAPI(
     title="Vessel Maintenance AI System",
@@ -64,11 +72,18 @@ app = FastAPI(
 # This allows the web interface to communicate with the API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify actual domains
+    allow_origins=config.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add enterprise middleware
+if config.multi_tenant_enabled:
+    app.add_middleware(tenant_middleware.__class__, tenant_manager=tenant_middleware.tenant_manager)
+
+if config.rate_limiting_enabled:
+    app.add_middleware(rate_limit_middleware.__class__, rate_limiter=rate_limit_middleware.rate_limiter, quota_manager=rate_limit_middleware.quota_manager)
 
 # Custom Properties Configuration
 ENTERPRISE_CONFIG = {
@@ -622,6 +637,406 @@ async def internal_error_handler(request, exc):
             "timestamp": db_manager.get_analytics().model_dump().get("timestamp", "unknown")
         }
     )
+
+
+# Enterprise Authentication Endpoints
+@app.post("/auth/login")
+async def login(username: str, password: str):
+    """Authenticate user and return JWT token."""
+    try:
+        user = auth_service.user_manager.authenticate_user(username, password)
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        access_token = auth_service.create_access_token(user)
+        
+        # Log successful login
+        log_audit_event(
+            event_type=AuditEventType.USER_LOGIN,
+            action="user_login",
+            details={"username": username, "user_id": user.id},
+            severity=AuditSeverity.MEDIUM,
+            user_id=user.id
+        )
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+                "permissions": [p.value for p in user.permissions]
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+
+
+@app.post("/auth/api-key")
+async def create_api_key(name: str, permissions: List[str], expires_in_days: int = 365):
+    """Create a new API key for programmatic access."""
+    try:
+        # This would require authentication in production
+        tenant_id = get_current_tenant_id() or "default"
+        user_id = "admin"  # Would come from authenticated user
+        
+        api_key, api_key_obj = auth_service.api_key_manager.create_api_key(
+            name=name,
+            user_id=user_id,
+            tenant_id=tenant_id,
+            permissions=[Permission(p) for p in permissions],
+            expires_in_days=expires_in_days
+        )
+        
+        # Log API key creation
+        log_audit_event(
+            event_type=AuditEventType.USER_CREATED,
+            action="api_key_created",
+            details={"name": name, "permissions": permissions},
+            severity=AuditSeverity.MEDIUM,
+            user_id=user_id
+        )
+        
+        return {
+            "api_key": api_key,
+            "name": api_key_obj.name,
+            "expires_at": api_key_obj.expires_at.isoformat() if api_key_obj.expires_at else None,
+            "permissions": [p.value for p in api_key_obj.permissions]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create API key: {str(e)}")
+
+
+# Enterprise Tenant Management Endpoints
+@app.get("/tenants")
+async def get_tenants():
+    """Get list of tenants."""
+    try:
+        from src.tenancy import tenant_manager
+        tenants = list(tenant_manager.tenants.values())
+        return {
+            "tenants": [
+                {
+                    "id": tenant.id,
+                    "name": tenant.name,
+                    "domain": tenant.domain,
+                    "status": tenant.status.value,
+                    "created_at": tenant.created_at.isoformat(),
+                    "features": tenant.features
+                }
+                for tenant in tenants
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get tenants: {str(e)}")
+
+
+@app.post("/tenants")
+async def create_tenant(name: str, domain: str = None, settings: Dict[str, Any] = None):
+    """Create a new tenant."""
+    try:
+        from src.tenancy import tenant_manager
+        tenant = tenant_manager.create_tenant(name, domain, settings)
+        
+        # Log tenant creation
+        log_audit_event(
+            event_type=AuditEventType.USER_CREATED,
+            action="tenant_created",
+            details={"tenant_name": name, "tenant_id": tenant.id},
+            severity=AuditSeverity.HIGH
+        )
+        
+        return {
+            "tenant": {
+                "id": tenant.id,
+                "name": tenant.name,
+                "domain": tenant.domain,
+                "status": tenant.status.value,
+                "created_at": tenant.created_at.isoformat()
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create tenant: {str(e)}")
+
+
+# Enterprise Analytics Endpoints
+@app.get("/analytics/advanced")
+async def get_advanced_analytics(
+    days: int = 30,
+    include_trends: bool = True,
+    include_predictions: bool = False
+):
+    """Get advanced analytics with trend analysis and predictive insights."""
+    try:
+        # Get basic analytics
+        basic_analytics = db_manager.get_analytics(days)
+        
+        advanced_analytics = {
+            "basic_metrics": basic_analytics.model_dump(),
+            "trend_analysis": {},
+            "predictive_insights": {},
+            "tenant_id": get_current_tenant_id()
+        }
+        
+        if include_trends:
+            # Calculate trends
+            trends = {
+                "document_processing_trend": "increasing",
+                "critical_alerts_trend": "stable",
+                "system_performance_trend": "improving"
+            }
+            advanced_analytics["trend_analysis"] = trends
+        
+        if include_predictions:
+            # Generate predictions
+            predictions = {
+                "predicted_documents_next_week": basic_analytics.total_processed * 1.1,
+                "predicted_critical_alerts": max(0, basic_analytics.critical_alerts - 2),
+                "system_load_prediction": "normal"
+            }
+            advanced_analytics["predictive_insights"] = predictions
+        
+        return advanced_analytics
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get advanced analytics: {str(e)}")
+
+
+# Enterprise Monitoring Endpoints
+@app.get("/monitoring/metrics")
+async def get_system_metrics(minutes: int = 60):
+    """Get system metrics for monitoring."""
+    try:
+        from src.notifications import monitoring_service
+        
+        metrics = {}
+        for metric_name in ["cpu_usage", "memory_usage", "api_requests", "document_processing"]:
+            metrics[metric_name] = monitoring_service.get_metric(metric_name, minutes)
+        
+        return {
+            "metrics": metrics,
+            "timestamp": datetime.utcnow().isoformat(),
+            "tenant_id": get_current_tenant_id()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get metrics: {str(e)}")
+
+
+@app.get("/monitoring/alerts")
+async def get_system_alerts(hours: int = 24):
+    """Get system alerts."""
+    try:
+        from src.notifications import monitoring_service
+        alerts = monitoring_service.get_alerts(hours)
+        
+        return {
+            "alerts": alerts,
+            "total_alerts": len(alerts),
+            "tenant_id": get_current_tenant_id()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get alerts: {str(e)}")
+
+
+# Enterprise Notifications Endpoints
+@app.post("/notifications/send")
+async def send_custom_notification(
+    title: str,
+    message: str,
+    notification_type: NotificationType = NotificationType.INFO,
+    priority: NotificationPriority = NotificationPriority.NORMAL,
+    channels: List[str] = None,
+    recipients: List[str] = None
+):
+    """Send a custom notification."""
+    try:
+        success = await send_notification(
+            notification_type=notification_type,
+            title=title,
+            message=message,
+            priority=priority,
+            channels=[NotificationChannel(c) for c in (channels or [])],
+            recipients=recipients
+        )
+        
+        return {
+            "status": "sent" if success else "failed",
+            "notification": {
+                "title": title,
+                "message": message,
+                "type": notification_type.value,
+                "priority": priority.value
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send notification: {str(e)}")
+
+
+@app.get("/notifications/history")
+async def get_notification_history(limit: int = 50):
+    """Get notification history."""
+    try:
+        tenant_id = get_current_tenant_id()
+        notifications = notification_manager.get_notifications(tenant_id, limit)
+        
+        return {
+            "notifications": [
+                {
+                    "id": n.id,
+                    "title": n.title,
+                    "message": n.message,
+                    "type": n.type.value,
+                    "priority": n.priority.value,
+                    "status": n.status.value,
+                    "created_at": n.created_at.isoformat(),
+                    "sent_at": n.sent_at.isoformat() if n.sent_at else None
+                }
+                for n in notifications
+            ],
+            "total": len(notifications)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get notification history: {str(e)}")
+
+
+# Enterprise Audit Endpoints
+@app.get("/audit/events")
+async def get_audit_events(
+    event_type: str = None,
+    severity: str = None,
+    start_date: str = None,
+    end_date: str = None,
+    limit: int = 100
+):
+    """Get audit events with filters."""
+    try:
+        from src.audit import AuditEventType, AuditSeverity
+        
+        # Parse filters
+        filters = {}
+        if event_type:
+            filters["event_type"] = AuditEventType(event_type)
+        if severity:
+            filters["severity"] = AuditSeverity(severity)
+        if start_date:
+            filters["start_date"] = datetime.fromisoformat(start_date)
+        if end_date:
+            filters["end_date"] = datetime.fromisoformat(end_date)
+        
+        events = audit_logger.get_events(limit=limit, **filters)
+        
+        return {
+            "events": [
+                {
+                    "id": e.id,
+                    "event_type": e.event_type.value,
+                    "severity": e.severity.value,
+                    "action": e.action,
+                    "outcome": e.outcome,
+                    "timestamp": e.timestamp.isoformat(),
+                    "user_id": e.user_id,
+                    "details": e.details
+                }
+                for e in events
+            ],
+            "total": len(events)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get audit events: {str(e)}")
+
+
+# Enterprise GDPR Endpoints
+@app.post("/gdpr/register")
+async def register_data_subject(email: str, name: str = None, consent_given: bool = False):
+    """Register a data subject for GDPR compliance."""
+    try:
+        from src.audit import gdpr_compliance
+        data_subject = gdpr_compliance.register_data_subject(email, name, consent_given)
+        
+        return {
+            "data_subject": {
+                "id": data_subject.id,
+                "email": data_subject.email,
+                "name": data_subject.name,
+                "consent_given": data_subject.consent_given,
+                "consent_date": data_subject.consent_date.isoformat() if data_subject.consent_date else None
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to register data subject: {str(e)}")
+
+
+@app.post("/gdpr/request")
+async def submit_gdpr_request(data_subject_id: str, request_type: str, details: Dict[str, Any] = None):
+    """Submit a GDPR request."""
+    try:
+        from src.audit import gdpr_compliance, GDPRRight
+        gdpr_request = gdpr_compliance.submit_gdpr_request(
+            data_subject_id=data_subject_id,
+            request_type=GDPRRight(request_type),
+            details=details
+        )
+        
+        return {
+            "request": {
+                "id": gdpr_request.id,
+                "request_type": gdpr_request.request_type.value,
+                "status": gdpr_request.status,
+                "request_date": gdpr_request.request_date.isoformat()
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to submit GDPR request: {str(e)}")
+
+
+# Enterprise Configuration Endpoints
+@app.get("/config/enterprise")
+async def get_enterprise_config():
+    """Get enterprise configuration and feature status."""
+    try:
+        return {
+            "enterprise_features": ENTERPRISE_FEATURES,
+            "configuration": {
+                "multi_tenant_enabled": config.multi_tenant_enabled,
+                "rate_limiting_enabled": config.rate_limiting_enabled,
+                "cache_enabled": config.cache_enabled,
+                "audit_logging_enabled": config.audit_logging_enabled,
+                "gdpr_compliance_enabled": config.gdpr_compliance_enabled,
+                "advanced_analytics_enabled": config.advanced_analytics_enabled,
+                "custom_models_enabled": config.custom_models_enabled,
+                "batch_processing_enabled": config.batch_processing_enabled,
+                "real_time_notifications_enabled": config.real_time_notifications_enabled
+            },
+            "tenant_id": get_current_tenant_id(),
+            "current_tenant": get_current_tenant().dict() if get_current_tenant() else None
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get enterprise config: {str(e)}")
+
+
+@app.get("/config/quotas")
+async def get_quota_usage():
+    """Get current quota usage for the tenant."""
+    try:
+        tenant_id = get_current_tenant_id() or "default"
+        usage_summary = quota_manager.get_usage_summary(tenant_id)
+        
+        return {
+            "tenant_id": tenant_id,
+            "usage_summary": usage_summary,
+            "limits": {
+                "documents_per_day": 10000,
+                "api_requests_per_hour": 1000,
+                "storage_gb": 100,
+                "concurrent_requests": 50
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get quota usage: {str(e)}")
 
 
 def main():

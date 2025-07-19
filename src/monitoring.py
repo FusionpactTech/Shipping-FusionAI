@@ -12,7 +12,10 @@ License: MIT License
 """
 
 import time
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
 import asyncio
 from typing import Dict, Any, List, Optional, Callable
 from datetime import datetime, timedelta
@@ -359,6 +362,10 @@ class MetricsCollector:
     
     def update_system_metrics(self):
         """Update system resource metrics"""
+        if psutil is None:
+            logger.warning("psutil not available, skipping system metrics")
+            return
+            
         # CPU usage
         cpu_percent = psutil.cpu_percent(interval=1)
         self.cpu_usage.set(cpu_percent)
@@ -537,6 +544,11 @@ class HealthChecker:
                 "status": HealthStatus.HEALTHY,
                 "message": "Cache connection successful"
             }
+        except ImportError:
+            return {
+                "status": HealthStatus.DEGRADED,
+                "message": "Redis module not available"
+            }
         except Exception as e:
             return {
                 "status": HealthStatus.DEGRADED,
@@ -545,6 +557,12 @@ class HealthChecker:
     
     async def _check_disk_space(self) -> Dict[str, Any]:
         """Check available disk space"""
+        if psutil is None:
+            return {
+                "status": HealthStatus.DEGRADED,
+                "message": "psutil not available for disk space checking"
+            }
+            
         try:
             usage = psutil.disk_usage('/')
             free_percent = (usage.free / usage.total) * 100
@@ -572,6 +590,12 @@ class HealthChecker:
     
     async def _check_memory_usage(self) -> Dict[str, Any]:
         """Check memory usage"""
+        if psutil is None:
+            return {
+                "status": HealthStatus.DEGRADED,
+                "message": "psutil not available for memory usage checking"
+            }
+            
         try:
             memory = psutil.virtual_memory()
             
@@ -612,6 +636,24 @@ class PerformanceMonitor:
     
     def collect_metrics(self) -> PerformanceMetrics:
         """Collect current performance metrics"""
+        if psutil is None:
+            # Return default metrics if psutil is not available
+            return PerformanceMetrics(
+                timestamp=datetime.utcnow(),
+                cpu_usage_percent=0.0,
+                memory_usage_percent=0.0,
+                memory_usage_mb=0.0,
+                disk_usage_percent=0.0,
+                disk_io_read_mb=0.0,
+                disk_io_write_mb=0.0,
+                network_bytes_sent=0,
+                network_bytes_recv=0,
+                active_connections=0,
+                response_time_avg_ms=0.0,
+                requests_per_second=0.0,
+                error_rate_percent=0.0
+            )
+        
         # CPU usage
         cpu_usage = psutil.cpu_percent(interval=1)
         
@@ -632,7 +674,10 @@ class PerformanceMonitor:
         network_bytes_recv = network_io.bytes_recv if network_io else 0
         
         # Active connections
-        connections = len(psutil.net_connections())
+        try:
+            connections = len(psutil.net_connections())
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            connections = 0
         
         # Placeholder for application-specific metrics
         response_time_avg_ms = 0.0  # Would be calculated from request metrics

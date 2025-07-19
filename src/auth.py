@@ -26,8 +26,14 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import structlog
 from cryptography.fernet import Fernet
-import ldap
-from authlib.integrations.requests_client import OAuth2Session
+try:
+    import ldap
+except ImportError:
+    ldap = None
+try:
+    from authlib.integrations.requests_client import OAuth2Session
+except ImportError:
+    OAuth2Session = None
 import json
 
 from .config import settings, AuthProvider
@@ -629,6 +635,10 @@ class AuthManager:
     
     def _authenticate_ldap(self, username: str, password: str) -> bool:
         """Authenticate user against LDAP server"""
+        if ldap is None:
+            logger.error("LDAP module not available")
+            return False
+            
         if not settings.ldap_server:
             return False
         

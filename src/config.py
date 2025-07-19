@@ -13,7 +13,8 @@ License: MIT License
 
 import os
 from typing import Optional, List, Dict, Any
-from pydantic import BaseSettings, Field, validator
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 from enum import Enum
 
 
@@ -197,25 +198,29 @@ class Settings(BaseSettings):
     docs_url: str = Field(default="/docs", env="DOCS_URL")
     redoc_url: str = Field(default="/redoc", env="REDOC_URL")
     
-    @validator("cors_origins", pre=True)
+    @field_validator("cors_origins", mode="before")
+    @classmethod
     def parse_cors_origins(cls, v):
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",")]
         return v
     
-    @validator("cors_allow_methods", pre=True)
+    @field_validator("cors_allow_methods", mode="before")
+    @classmethod
     def parse_cors_methods(cls, v):
         if isinstance(v, str):
             return [method.strip() for method in v.split(",")]
         return v
     
-    @validator("cors_allow_headers", pre=True)
+    @field_validator("cors_allow_headers", mode="before")
+    @classmethod
     def parse_cors_headers(cls, v):
         if isinstance(v, str):
             return [header.strip() for header in v.split(",")]
         return v
     
-    @validator("allowed_file_types", pre=True)
+    @field_validator("allowed_file_types", mode="before")
+    @classmethod
     def parse_file_types(cls, v):
         if isinstance(v, str):
             return [ext.strip() for ext in v.split(",")]

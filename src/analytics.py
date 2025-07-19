@@ -11,18 +11,33 @@ Version: 2.0.0
 License: MIT License
 """
 
-import pandas as pd
-import numpy as np
+try:
+    import pandas as pd
+    import numpy as np
+    from sklearn.linear_model import LinearRegression
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.cluster import KMeans
+    from sklearn.ensemble import IsolationForest
+except ImportError:
+    pd = None
+    np = None
+    LinearRegression = None
+    StandardScaler = None
+    KMeans = None
+    IsolationForest = None
+
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    from plotly.subplots import make_subplots
+except ImportError:
+    go = None
+    px = None
+    make_subplots = None
+
 from typing import Dict, Any, List, Optional, Tuple, Union
 from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-from sklearn.ensemble import IsolationForest
-import plotly.graph_objects as go
-import plotly.express as px
-from plotly.subplots import make_subplots
 import json
 import asyncio
 from dataclasses import dataclass
@@ -124,8 +139,11 @@ class PredictiveModel:
         self.is_trained = False
         self.feature_names = []
     
-    def train(self, X: np.ndarray, y: np.ndarray, feature_names: List[str]):
+    def train(self, X, y, feature_names: List[str]):
         """Train the predictive model"""
+        if np is None or LinearRegression is None:
+            raise ImportError("Required ML libraries not available")
+            
         self.feature_names = feature_names
         X_scaled = self.scaler.fit_transform(X)
         
@@ -135,10 +153,13 @@ class PredictiveModel:
         self.model.fit(X_scaled, y)
         self.is_trained = True
     
-    def predict(self, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def predict(self, X) -> Tuple[Any, Any]:
         """Make predictions with confidence intervals"""
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
+        
+        if np is None:
+            raise ImportError("NumPy not available for predictions")
         
         X_scaled = self.scaler.transform(X)
         predictions = self.model.predict(X_scaled)
@@ -164,7 +185,10 @@ class AdvancedAnalyticsEngine:
     
     def __init__(self):
         self.predictive_models: Dict[str, PredictiveModel] = {}
-        self.anomaly_detector = IsolationForest(contamination=0.1, random_state=42)
+        if IsolationForest is not None:
+            self.anomaly_detector = IsolationForest(contamination=0.1, random_state=42)
+        else:
+            self.anomaly_detector = None
         self._cache = {}
         self._cache_ttl = timedelta(minutes=15)
         self._last_cache_cleanup = datetime.utcnow()
@@ -220,7 +244,7 @@ class AdvancedAnalyticsEngine:
     
     async def analyze_trends(
         self,
-        data: pd.DataFrame,
+        data,
         metric_column: str,
         time_column: str = "timestamp"
     ) -> TrendAnalysis:
@@ -235,6 +259,16 @@ class AdvancedAnalyticsEngine:
         Returns:
             Detailed trend analysis results
         """
+        if pd is None or np is None or LinearRegression is None:
+            return TrendAnalysis(
+                metric=metric_column,
+                direction=TrendDirection.STABLE,
+                change_percent=0.0,
+                confidence=0.0,
+                slope=0.0,
+                r_squared=0.0
+            )
+            
         if data.empty or len(data) < 3:
             return TrendAnalysis(
                 metric=metric_column,
@@ -305,9 +339,9 @@ class AdvancedAnalyticsEngine:
     
     async def detect_anomalies(
         self,
-        data: pd.DataFrame,
+        data,
         features: List[str]
-    ) -> Tuple[np.ndarray, pd.DataFrame]:
+    ) -> Tuple[Any, Any]:
         """
         Detect anomalies in vessel maintenance data.
         
@@ -318,6 +352,9 @@ class AdvancedAnalyticsEngine:
         Returns:
             Tuple of (anomaly_scores, anomalous_records)
         """
+        if pd is None or np is None or self.anomaly_detector is None:
+            return [], {}
+            
         if data.empty or len(data) < 10:
             return np.array([]), pd.DataFrame()
         
@@ -434,10 +471,14 @@ class AdvancedAnalyticsEngine:
         self,
         tenant_id: str,
         filters: AnalyticsFilter
-    ) -> pd.DataFrame:
+    ):
         """Get analytics data based on filters"""
         # This would query your actual database
         # For now, generating sample data
+        
+        if pd is None or np is None:
+            # Return empty dict if pandas not available
+            return {}
         
         cache_key = f"analytics_data_{tenant_id}_{filters.start_date}_{filters.end_date}"
         

@@ -18,7 +18,10 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 from fastapi import HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
-import redis
+try:
+    import redis
+except ImportError:
+    redis = None
 import json
 import asyncio
 from dataclasses import dataclass
@@ -153,8 +156,11 @@ class RedisRateLimitStorage(RateLimitStorage):
         self.redis_password = redis_password or settings.redis_password
         self._redis = None
     
-    def _get_redis(self) -> redis.Redis:
+    def _get_redis(self):
         """Get Redis connection"""
+        if redis is None:
+            raise Exception("Redis not available")
+            
         if self._redis is None:
             self._redis = redis.from_url(
                 self.redis_url,

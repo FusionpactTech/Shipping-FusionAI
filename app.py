@@ -996,6 +996,63 @@ async def get_enterprise_config(
     }
 
 
+@app.get("/admin/status", tags=["Administration"])
+async def get_admin_status(
+    current_user: User = Depends(require_superuser)
+):
+    """Get comprehensive system status for administrators"""
+    try:
+        # Get health status
+        health_checker = get_health_checker()
+        health_status = await health_checker.run_checks()
+        
+        # Get performance metrics
+        performance_monitor = get_performance_monitor()
+        current_metrics = performance_monitor.collect_metrics()
+        
+        # Get rate limiting stats if enabled
+        rate_limit_stats = {}
+        if settings.rate_limiting_enabled:
+            rate_limiter = get_rate_limiter()
+            rate_limit_stats = rate_limiter.get_stats()
+        
+        status_data = {
+            "system_health": health_status,
+            "performance": {
+                "cpu_usage": getattr(current_metrics, 'cpu_usage_percent', 0),
+                "memory_usage": getattr(current_metrics, 'memory_usage_percent', 0),
+                "active_connections": getattr(current_metrics, 'active_connections', 0),
+                "requests_per_second": getattr(current_metrics, 'requests_per_second', 0)
+            },
+            "enterprise_features": {
+                "multi_tenant_active": settings.multi_tenant_enabled,
+                "rate_limiting_active": settings.rate_limiting_enabled,
+                "analytics_active": settings.advanced_analytics_enabled,
+                "monitoring_active": settings.monitoring_enabled,
+                "audit_logging_active": settings.audit_logging
+            },
+            "rate_limiting": rate_limit_stats,
+            "operational_metrics": {
+                "uptime_seconds": 0,  # Would be calculated from app start time
+                "total_requests": 0,  # Would be from metrics collector
+                "error_rate": 0.0
+            }
+        }
+        
+        return {
+            "status": "success",
+            "data": status_data,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Admin status retrieval failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to retrieve admin status"
+        )
+
+
 def main():
     """
     Main entry point for the Enterprise Vessel Maintenance AI System.

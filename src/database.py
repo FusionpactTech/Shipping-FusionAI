@@ -28,9 +28,18 @@ import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from pathlib import Path
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.pool import StaticPool
 
 # Import data models for type safety
 from .models import ProcessingResponse, AnalyticsData
+
+# Avoid circular imports by importing config when needed
+try:
+    from .config import settings
+except ImportError:
+    settings = None
 
 
 class DatabaseManager:
@@ -66,6 +75,11 @@ class DatabaseManager:
         self.logger = logging.getLogger(__name__)
         self._ensure_db_directory()
         self._initialize_database()
+        
+        # Initialize SQLAlchemy for enterprise features
+        self.engine = None
+        self.SessionLocal = None
+        self._init_sqlalchemy()
         
     def _ensure_db_directory(self):
         """
@@ -157,6 +171,58 @@ class DatabaseManager:
         except Exception as e:
             self.logger.error(f"Error initializing database: {e}")
             raise
+    
+    def _init_sqlalchemy(self):
+        """Initialize SQLAlchemy engine and session factory for enterprise features"""
+        try:
+            # Get database URL from settings, fallback to SQLite
+            if hasattr(settings, 'get_database_url'):
+                database_url = settings.get_database_url()
+            else:
+                database_url = f"sqlite:///{self.db_path}"
+            
+            # Create engine with appropriate configuration
+            if database_url.startswith('sqlite'):
+                self.engine = create_engine(
+                    database_url,
+                    poolclass=StaticPool,
+                    connect_args={"check_same_thread": False},
+                    echo=False
+                )
+            else:
+                pool_size = getattr(settings, 'database_pool_size', 20)
+                max_overflow = getattr(settings, 'database_max_overflow', 30)
+                pool_timeout = getattr(settings, 'database_pool_timeout', 30)
+                
+                self.engine = create_engine(
+                    database_url,
+                    pool_size=pool_size,
+                    max_overflow=max_overflow,
+                    pool_timeout=pool_timeout,
+                    echo=False
+                )
+            
+            # Create session factory
+            self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+            
+            self.logger.info("SQLAlchemy initialized successfully")
+            
+        except Exception as e:
+            self.logger.error(f"SQLAlchemy initialization failed: {e}")
+            # Fallback to SQLite
+            self.engine = create_engine(
+                f"sqlite:///{self.db_path}",
+                poolclass=StaticPool,
+                connect_args={"check_same_thread": False},
+                echo=False
+            )
+            self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+    
+    def get_session(self) -> Session:
+        """Get a new SQLAlchemy session for enterprise features"""
+        if self.SessionLocal is None:
+            self._init_sqlalchemy()
+        return self.SessionLocal()
     
     def save_result(self, result: ProcessingResponse) -> bool:
         """
